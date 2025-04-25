@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import './VinCoder.css';  // Importing the CSS file
+import './VinCoder.css'; 
 
 const VinCoder = () => {
   const [vin, setVin] = useState('');
@@ -63,7 +63,6 @@ const VinCoder = () => {
         <div className="result-container">
           <h3>Результат:</h3>
 
-          {/* Price Information */}
           <div className="result-section">
             <div className="section-title">Price Information</div>
             <div className="result-item">
@@ -72,7 +71,6 @@ const VinCoder = () => {
             </div>
           </div>
 
-          {/* Balance Information */}
           <div className="result-section">
             <div className="section-title">Balance</div>
             {Object.keys(result.balance).map((key, index) => (
@@ -83,7 +81,6 @@ const VinCoder = () => {
             ))}
           </div>
 
-          {/* Decode Information */}
           <div className="result-section">
             <div className="section-title">Vehicle Information</div>
             {renderDecodeData(result.decode)}

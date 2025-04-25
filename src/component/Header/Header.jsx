@@ -1,13 +1,12 @@
 import React from "react";
 import styles from "./Header.module.scss";
 import { Link } from "react-router-dom";
-import { useAuth0 } from "@auth0/auth0-react"; // Імпортуємо хук
+import { useAuth0 } from "@auth0/auth0-react";
 
 import LoginBtn from "../../component/loginBtn/LoginBtn.jsx";
-import LogOutBtn from "../../component/logOutBtn/logOutBtn.jsx";
 
 function Header() {
-  const { isAuthenticated, loginWithRedirect, logout } = useAuth0(); // Використовуємо хук для отримання статусу авторизації
+  const { isAuthenticated, loginWithRedirect, logout } = useAuth0();
 
   return (
     <main className={styles.header}>
@@ -18,7 +17,7 @@ function Header() {
         <Link className="navigatorTarget" to={"./KatalogCar"}>
           Всі авто
         </Link>
-        <Link className="navigatorTarget" to={"./MyProfile"}>
+        <Link className="navigatorTarget" to={"./profilePage"}>
           Профіль
         </Link>
       </nav>
