@@ -1,0 +1,11 @@
+.addCarNumber {
+  width: 50px;
+  border-radius: 50%;
+  background-color: #4CAF50;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 71px;
+  color: white;
+}

@@ -1,0 +1,121 @@
+.addCarPageHeader {
+	font-size: 40px;
+	font-weight: bold;
+	text-align: center;
+}
+
+.addCarPageAddPhoto,
+.addCarPageAddMoreInfo {
+	font-size: 24px;
+	font-weight: bold;
+	display: flex;
+	line-height: 60px;
+	margin: 0 60px;
+}
+
+.addCarPageAddPhotoMain {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin: 0 auto;
+}
+
+.addCarPageAddInfoCar,
+.addCarPageAddInfoCarAdditional {
+	font-size: 24px;
+	font-weight: bold;
+	display: flex;
+	line-height: 60px;
+	margin: 0 603px;
+	display: grid;
+	grid-template-columns: repeat(2, auto);
+	grid-template-rows: repeat(4, auto);
+	gap: 10px;
+}
+
+.addCarPageAddDescription {
+	margin: 0 603px;
+	display: flex;
+	flex-direction: column;
+	font-size: 24px;
+	font-weight: bold;
+}
+
+.addCarPageInfoCarName {
+	width: 300px;
+}
+
+.fieldsAreMandatory {
+	margin: 0 180px;
+	display: flex;
+	line-height: 3px;
+}
+
+.fieldsAreMandatory p {
+	color: black;
+}
+
+.addCarPageAddInfoCarSelector {
+	width: 400px;
+	height: 49px;
+	font-size: 24px;
+	font-weight: 400;
+	border-radius: 10px;
+	padding: 10px;
+}
+
+.addCarPageInfoCarInput {
+	width: 400px;
+	height: 49px;
+	border-radius: 10px;
+	font-size: 24px;
+	padding: 10px;
+}
+
+.descrption {
+	font-size: 25px;
+	display: flex;
+	flex-direction: column;
+	margin: 0 auto;
+	justify-content: center;
+	align-items: center;
+}
+
+.addCarPageInfoCarInputDescription {
+	width: 686px;
+	height: 346px;
+	text-align: left;
+	vertical-align: top;
+	padding: 15px;
+	box-sizing: border-box;
+	border-radius: 20px;
+}
+
+#dis {
+	display: flex;
+}
+
+#dis input {
+	width: 200px;
+	margin: 0 5px 0 0;
+}
+
+.buttonAddCar {
+	width: 230px;
+	height: 47px;
+	font-size: 24px;
+	border-radius: 10px;
+	background-color: #ffffff;
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin: 20px auto;
+}
+
+.selectorPhoto {
+	border-radius: 20px;
+	border: 4px solid #272444;
+}
+
+

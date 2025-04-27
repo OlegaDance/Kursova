@@ -1,0 +1,23 @@
+.addNewPhotoStyleInput{
+  display: none;
+}
+
+.addNewPhotoStyle{
+  border: 2px solid #272444;
+  border-radius: 20px;
+}
+.addNewPhotoStyle img{
+  object-fit: cover;
+  width: 315px;
+  height: 300px;
+  border-radius: 20px;
+  z-index: 99px;
+}
+
+.addNewPhotoDelete {
+  position: absolute;
+  z-index: 100;
+  top: 257px;
+  right: 800px;
+  cursor: pointer;
+}
