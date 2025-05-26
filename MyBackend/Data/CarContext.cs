@@ -13,9 +13,7 @@ namespace CarApi.Data
         {
             modelBuilder.Entity<Car>()
                 .Property(c => c.Price)
-                .HasColumnType("decimal(18,2)"); 
-
-            base.OnModelCreating(modelBuilder); 
+                .HasColumnType("decimal(18,2)");
         }
     }
 }

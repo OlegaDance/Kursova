@@ -1,10 +1,12 @@
-using CarApi.Data;
-using CarApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Http;
-using System.IO;
+using CarApi.Data;
+using CarApi.Models;
+using CarApi.DTOs;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace CarApi.Controllers
 {
@@ -25,40 +27,80 @@ namespace CarApi.Controllers
             return await _context.Cars.ToListAsync();
         }
 
-        // Оновлений метод AddCar для валідації VIN і завантаження фото
-        [HttpPost("cars")]
-        public async Task<ActionResult<Car>> AddCar([FromForm] Car car, [FromForm] IFormFileCollection photoPaths)
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Car>> GetCar(int id)
         {
-            // Перевірка на валідність моделі (включаючи VIN)
+            var car = await _context.Cars.FindAsync(id);
+            if (car == null)
+                return NotFound();
+            return car;
+        }
+
+        [HttpPost]
+        [Consumes("multipart/form-data")]
+        public async Task<ActionResult<Car>> AddCar([FromForm] CarCreateDto carDto)
+        {
             if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState); // Повертає помилку, якщо VIN не відповідає шаблону
-            }
+                return BadRequest(ModelState);
 
-            // Збереження файлів
-            foreach (var file in photoPaths)
+            var photoPaths = new List<string>();
+
+            if (carDto.PhotoPaths != null && carDto.PhotoPaths.Any())
             {
-                // Перевірка, чи є файл
-                if (file != null && file.Length > 0)
+                var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+                if (!Directory.Exists(uploadPath))
+                    Directory.CreateDirectory(uploadPath);
+
+                foreach (var file in carDto.PhotoPaths)
                 {
-                   var filePath = Path.Combine("C:\\Users\\MrKyg\\Desktop\\xd\\Kursova\\Photo", file.FileName);
-
-                    // Збереження файлу
-                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    if (file.Length > 0)
                     {
-                        await file.CopyToAsync(stream);
-                    }
+                        var fileName = Path.GetRandomFileName() + Path.GetExtension(file.FileName);
+                        var filePath = Path.Combine(uploadPath, fileName);
 
-                    // Додавання шляху до фото в базу даних
-                    car.PhotoPaths += filePath + ";"; // Додаємо шлях до фото, розділений крапкою з комою
+                        using var stream = new FileStream(filePath, FileMode.Create);
+                        await file.CopyToAsync(stream);
+
+                        photoPaths.Add($"/uploads/{fileName}");
+                    }
                 }
             }
 
-            // Додаємо автомобіль до бази даних
+            var car = new Car
+            {
+                VinCode = carDto.VinCode,
+                VehicleId = carDto.VehicleId,
+                Make = carDto.Make,
+                Model = carDto.Model,
+                ModelYear = carDto.ModelYear,
+                ProductType = carDto.ProductType,
+                Body = carDto.Body,
+                Trim = carDto.Trim,
+                Series = carDto.Series,
+                Drive = carDto.Drive,
+                EngineDisplacement = carDto.EngineDisplacement,
+                FuelTypePrimary = carDto.FuelTypePrimary,
+                EngineModel = carDto.EngineModel,
+                Manufacturer = carDto.Manufacturer,
+                ManufacturerAddress = carDto.ManufacturerAddress,
+                PlantCompany = carDto.PlantCompany,
+                PlantCountry = carDto.PlantCountry,
+                PlantState = carDto.PlantState,
+                FuelConsumptionExtraUrban = carDto.FuelConsumptionExtraUrban,
+                FuelConsumptionUrban = carDto.FuelConsumptionUrban,
+                NumberOfDoors = carDto.NumberOfDoors,
+                MaxWeight = carDto.MaxWeight,
+                CheckDigit = carDto.CheckDigit,
+                SequentialNumber = carDto.SequentialNumber,
+                Price = carDto.Price,
+
+                PhotoPaths = photoPaths
+            };
+
             _context.Cars.Add(car);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetCars), new { id = car.Id }, car);
+            return CreatedAtAction(nameof(GetCar), new { id = car.Id }, car);
         }
 
         [HttpDelete("{id}")]

@@ -188,3 +188,6 @@ C:\Users\MrKyg\Desktop\xd\Kursova\MyBackend\obj\Debug\net9.0\refint\MyBackend.dl
 C:\Users\MrKyg\Desktop\xd\Kursova\MyBackend\obj\Debug\net9.0\MyBackend.pdb
 C:\Users\MrKyg\Desktop\xd\Kursova\MyBackend\obj\Debug\net9.0\MyBackend.genruntimeconfig.cache
 C:\Users\MrKyg\Desktop\xd\Kursova\MyBackend\obj\Debug\net9.0\ref\MyBackend.dll
+C:\Users\MrKyg\Desktop\xd\Kursova\MyBackend\bin\Debug\net9.0\Swashbuckle.AspNetCore.Swagger.dll
+C:\Users\MrKyg\Desktop\xd\Kursova\MyBackend\bin\Debug\net9.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\Users\MrKyg\Desktop\xd\Kursova\MyBackend\bin\Debug\net9.0\Swashbuckle.AspNetCore.SwaggerUI.dll

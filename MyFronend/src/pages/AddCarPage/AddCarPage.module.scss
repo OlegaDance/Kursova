@@ -1,0 +1,48 @@
+.formContainer {
+  max-width: 600px;
+  margin: 30px auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-family: Arial, sans-serif;
+  background-color: #f9f9f9;
+}
+
+.title {
+  color: #2e7d32;
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: bold;
+  margin-top: 12px;
+}
+
+input[type='text'],
+input[type='number'],
+input[type='file'] {
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+}
+
+.btn {
+  margin-top: 20px;
+  padding: 10px 15px;
+  background-color: #2e7d32;
+  border: none;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 4px;
+  width: 100%;
+  transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+  background-color: #27632a;
+}

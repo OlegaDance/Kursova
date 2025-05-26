@@ -1,14 +1,11 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json;
+using Microsoft.AspNetCore.Http;
 
-namespace CarApi.Models
+namespace CarApi.DTOs
 {
-    public class Car
+    public class CarCreateDto
     {
-        public int Id { get; set; }
-
         [Required]
         [RegularExpression(@"^[A-HJ-NPR-Z0-9]{17}$", ErrorMessage = "Invalid VIN format")]
         public string VinCode { get; set; }
@@ -37,16 +34,7 @@ namespace CarApi.Models
         public string SequentialNumber { get; set; }
         public decimal Price { get; set; }
 
-        // Зберігаємо шляхи фото у JSON рядку у базі
-        public string PhotoPathsJson { get; set; }
-
-        [NotMapped]
-        public List<string> PhotoPaths
-        {
-            get => string.IsNullOrEmpty(PhotoPathsJson) 
-                ? new List<string>() 
-                : JsonSerializer.Deserialize<List<string>>(PhotoPathsJson);
-            set => PhotoPathsJson = JsonSerializer.Serialize(value);
-        }
+        // Файли фото для завантаження
+        public List<IFormFile> PhotoPaths { get; set; }
     }
 }
