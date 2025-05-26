@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Microsoft.AspNetCore.Hosting;
 
 namespace CarApi.Controllers
 {
@@ -15,25 +16,12 @@ namespace CarApi.Controllers
     public class CarsController : ControllerBase
     {
         private readonly CarContext _context;
+        private readonly IWebHostEnvironment _environment;
 
-        public CarsController(CarContext context)
+        public CarsController(CarContext context, IWebHostEnvironment environment)
         {
             _context = context;
-        }
-
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Car>>> GetCars()
-        {
-            return await _context.Cars.ToListAsync();
-        }
-
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Car>> GetCar(int id)
-        {
-            var car = await _context.Cars.FindAsync(id);
-            if (car == null)
-                return NotFound();
-            return car;
+            _environment = environment;
         }
 
         [HttpPost]
@@ -41,13 +29,21 @@ namespace CarApi.Controllers
         public async Task<ActionResult<Car>> AddCar([FromForm] CarCreateDto carDto)
         {
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            {
+                // Формуємо список помилок валідації
+                var errors = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .ToList();
+
+                return BadRequest(new { Errors = errors });
+            }
 
             var photoPaths = new List<string>();
 
             if (carDto.PhotoPaths != null && carDto.PhotoPaths.Any())
             {
-                var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+                var uploadPath = Path.Combine(_environment.WebRootPath, "uploads");
                 if (!Directory.Exists(uploadPath))
                     Directory.CreateDirectory(uploadPath);
 
@@ -55,6 +51,7 @@ namespace CarApi.Controllers
                 {
                     if (file.Length > 0)
                     {
+                        // Генеруємо унікальне ім'я файлу
                         var fileName = Path.GetRandomFileName() + Path.GetExtension(file.FileName);
                         var filePath = Path.Combine(uploadPath, fileName);
 
@@ -65,6 +62,15 @@ namespace CarApi.Controllers
                     }
                 }
             }
+
+            // Фільтруємо тільки підтримувані формати зображень
+            var filteredPaths = photoPaths
+                .Where(p => p.StartsWith("/uploads/") &&
+                            (p.EndsWith(".jpg", System.StringComparison.OrdinalIgnoreCase) ||
+                             p.EndsWith(".jpeg", System.StringComparison.OrdinalIgnoreCase) ||
+                             p.EndsWith(".png", System.StringComparison.OrdinalIgnoreCase) ||
+                             p.EndsWith(".webp", System.StringComparison.OrdinalIgnoreCase)))
+                .ToList();
 
             var car = new Car
             {
@@ -93,8 +99,8 @@ namespace CarApi.Controllers
                 CheckDigit = carDto.CheckDigit,
                 SequentialNumber = carDto.SequentialNumber,
                 Price = carDto.Price,
-
-                PhotoPaths = photoPaths
+                PhotoPaths = filteredPaths,
+                VerifiedVin = false
             };
 
             _context.Cars.Add(car);
@@ -103,17 +109,20 @@ namespace CarApi.Controllers
             return CreatedAtAction(nameof(GetCar), new { id = car.Id }, car);
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCar(int id)
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Car>> GetCar(int id)
         {
             var car = await _context.Cars.FindAsync(id);
             if (car == null)
                 return NotFound();
 
-            _context.Cars.Remove(car);
-            await _context.SaveChangesAsync();
+            return car;
+        }
 
-            return NoContent();
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Car>>> GetAllCars()
+        {
+            return await _context.Cars.ToListAsync();
         }
     }
 }

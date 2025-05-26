@@ -9,6 +9,9 @@ namespace CarApi.DTOs
         [Required]
         [RegularExpression(@"^[A-HJ-NPR-Z0-9]{17}$", ErrorMessage = "Invalid VIN format")]
         public string VinCode { get; set; }
+
+        public List<IFormFile> PhotoPaths { get; set; }
+
         public string VehicleId { get; set; }
         public string Make { get; set; }
         public string Model { get; set; }
@@ -33,8 +36,6 @@ namespace CarApi.DTOs
         public string CheckDigit { get; set; }
         public string SequentialNumber { get; set; }
         public decimal Price { get; set; }
-
-        // Файли фото для завантаження
-        public List<IFormFile> PhotoPaths { get; set; }
+        public bool VerifiedVin { get; set; }
     }
 }

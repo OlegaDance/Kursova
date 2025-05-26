@@ -12,6 +12,7 @@ namespace CarApi.Models
         [Required]
         [RegularExpression(@"^[A-HJ-NPR-Z0-9]{17}$", ErrorMessage = "Invalid VIN format")]
         public string VinCode { get; set; }
+
         public string VehicleId { get; set; }
         public string Make { get; set; }
         public string Model { get; set; }
@@ -36,6 +37,7 @@ namespace CarApi.Models
         public string CheckDigit { get; set; }
         public string SequentialNumber { get; set; }
         public decimal Price { get; set; }
+        public bool VerifiedVin { get; set; }
 
         // Зберігаємо шляхи фото у JSON рядку у базі
         public string PhotoPathsJson { get; set; }
@@ -43,9 +45,7 @@ namespace CarApi.Models
         [NotMapped]
         public List<string> PhotoPaths
         {
-            get => string.IsNullOrEmpty(PhotoPathsJson) 
-                ? new List<string>() 
-                : JsonSerializer.Deserialize<List<string>>(PhotoPathsJson);
+            get => string.IsNullOrEmpty(PhotoPathsJson) ? new List<string>() : JsonSerializer.Deserialize<List<string>>(PhotoPathsJson);
             set => PhotoPathsJson = JsonSerializer.Serialize(value);
         }
     }

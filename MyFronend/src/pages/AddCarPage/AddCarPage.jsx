@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import styles from "./AddCarPage.module.scss";
+import { Link } from "react-router-dom";
 
 export default function AddCarPage() {
   const [form, setForm] = useState({
@@ -28,6 +29,7 @@ export default function AddCarPage() {
     checkDigit: "",
     sequentialNumber: "",
     price: "",
+    VerifiedVin: false, 
     photoPaths: [],
   });
 
@@ -44,9 +46,16 @@ export default function AddCarPage() {
     e.preventDefault();
 
     const formData = new FormData();
+
     Object.entries(form).forEach(([key, value]) => {
       if (key === "photoPaths") {
         value.forEach((file) => formData.append("PhotoPaths", file));
+      } else if (typeof value === "boolean") {
+        
+        formData.append(
+          key.charAt(0).toUpperCase() + key.slice(1),
+          value ? "true" : "false"
+        );
       } else {
         formData.append(
           key.charAt(0).toUpperCase() + key.slice(1),
@@ -70,6 +79,7 @@ export default function AddCarPage() {
       const data = await response.json();
       alert("Автомобіль додано! ID: " + data.id);
 
+    
       setForm({
         vinCode: "",
         vehicleId: "",
@@ -96,6 +106,7 @@ export default function AddCarPage() {
         checkDigit: "",
         sequentialNumber: "",
         price: "",
+        VerifiedVin: false, 
         photoPaths: [],
       });
     } catch (error) {
@@ -144,6 +155,7 @@ export default function AddCarPage() {
   return (
     <div className={styles.formContainer}>
       <h2 className={styles.title}>Додати автомобіль</h2>
+      <Link to={"/AddVin"}>Головна</Link>
       <form onSubmit={handleSubmit}>
         {Object.entries(fieldLabels).map(([field, label]) => (
           <React.Fragment key={field}>
@@ -162,6 +174,8 @@ export default function AddCarPage() {
           </React.Fragment>
         ))}
 
+      
+
         <label htmlFor="photoPaths">Фото (можна кілька):</label>
         <input
           type="file"
@@ -171,7 +185,9 @@ export default function AddCarPage() {
           accept="image/*"
         />
 
-        <button className={styles.btn} type="submit">Додати автомобіль</button>
+        <button className={styles.btn} type="submit">
+          Додати автомобіль
+        </button>
       </form>
     </div>
   );

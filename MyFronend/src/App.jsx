@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Header from "./component/Header/Header";
 import { ProfilePage } from "./pages/Profile/profilePage";
 import AddCarPage  from "./pages/AddCarPage/AddCarPage";
+import AddVin from "./pages/AddVin/AddVin";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
           <Route path="/" element={<Main />} />
           <Route path="/ProfilePage" element={<ProfilePage />} />
           <Route path="/AddCarPage" element={<AddCarPage />} />
+          <Route path="/AddVin" element={<AddVin />} />
         </Routes>
       </div>
     </div>

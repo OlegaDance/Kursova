@@ -191,3 +191,4 @@ C:\Users\MrKyg\Desktop\xd\Kursova\MyBackend\obj\Debug\net9.0\ref\MyBackend.dll
 C:\Users\MrKyg\Desktop\xd\Kursova\MyBackend\bin\Debug\net9.0\Swashbuckle.AspNetCore.Swagger.dll
 C:\Users\MrKyg\Desktop\xd\Kursova\MyBackend\bin\Debug\net9.0\Swashbuckle.AspNetCore.SwaggerGen.dll
 C:\Users\MrKyg\Desktop\xd\Kursova\MyBackend\bin\Debug\net9.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+C:\Users\MrKyg\Desktop\xd\Kursova\MyBackend\bin\Debug\net9.0\MyBackend.staticwebassets.runtime.json
