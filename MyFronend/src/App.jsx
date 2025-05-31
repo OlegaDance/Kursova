@@ -5,6 +5,8 @@ import Header from "./component/Header/Header";
 import { ProfilePage } from "./pages/Profile/profilePage";
 import AddCarPage  from "./pages/AddCarPage/AddCarPage";
 import AddVin from "./pages/AddVin/AddVin";
+import Admin from "./pages/Admin/Admin";
+import TestVin from "./pages/TestVin/TestVin";
 
 function App() {
   return (
@@ -16,6 +18,8 @@ function App() {
           <Route path="/ProfilePage" element={<ProfilePage />} />
           <Route path="/AddCarPage" element={<AddCarPage />} />
           <Route path="/AddVin" element={<AddVin />} />
+          <Route path="/Admin" element={<Admin />} />
+          <Route path="/TestVin" element={<TestVin />} />
         </Routes>
       </div>
     </div>

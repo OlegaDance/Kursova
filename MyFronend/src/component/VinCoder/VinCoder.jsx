@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import './VinCoder.css'; 
+import React, { useState } from "react";
+import axios from "axios";
+import "./VinCoder.css";
 
 const VinCoder = () => {
-  const [vin, setVin] = useState('');
+  const [vin, setVin] = useState("");
   const [result, setResult] = useState(null);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   const apiKey = "ec3bfd80a222";
   const secretKey = "951063f779";
@@ -18,9 +18,11 @@ const VinCoder = () => {
 
     const encoder = new TextEncoder();
     const data = encoder.encode(toHash);
-    const hashBuffer = await crypto.subtle.digest('SHA-1', data);
+    const hashBuffer = await crypto.subtle.digest("SHA-1", data);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    const hashHex = hashArray
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
     const controlSum = hashHex.substring(0, 10);
 
     const url = `${apiPrefix}/${apiKey}/${controlSum}/decode/${formattedVin}.json`;
@@ -28,9 +30,9 @@ const VinCoder = () => {
     try {
       const response = await axios.get(url);
       setResult(response.data);
-      setError('');
+      setError("");
     } catch (err) {
-      setError('Помилка при запиті або VIN недійсний');
+      setError("Помилка при запиті або VIN недійсний");
       setResult(null);
     }
   };
@@ -39,7 +41,9 @@ const VinCoder = () => {
     return data.map((item, index) => (
       <div key={index} className="decode-item">
         <div className="label">{item.label}:</div>
-        <div className="value">{Array.isArray(item.value) ? item.value.join(', ') : item.value}</div>
+        <div className="value">
+          {Array.isArray(item.value) ? item.value.join(", ") : item.value}
+        </div>
       </div>
     ));
   };
@@ -53,7 +57,7 @@ const VinCoder = () => {
           value={vin}
           onChange={(e) => setVin(e.target.value)}
         />
-        <button onClick={handleCheckVin}>Додати дані через Vin</button>
+        <button onClick={handleCheckVin}>Провірити VIN</button>
       </div>
 
       {error && <p className="error-message">{error}</p>}
@@ -66,7 +70,9 @@ const VinCoder = () => {
             <div className="section-title">Price Information</div>
             <div className="result-item">
               <div className="label">Price:</div>
-              <div className="value">{result.price} {result.price_currency}</div>
+              <div className="value">
+                {result.price} {result.price_currency}
+              </div>
             </div>
           </div>
 

@@ -12,7 +12,7 @@ function Header() {
     <main className={styles.header}>
       <nav className={styles.navigationTarget}>
         <Link to={"/"}>Головна</Link>
-        <Link to={"./KatalogCar"}>Всі авто</Link>
+        <Link to={"./TestVin"}>Провірка VIN</Link>
         <Link to={"./profilePage"}>Профіль</Link>
       </nav>
       <Link to={"./AddCarPage"}>

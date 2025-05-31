@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import ItemBlock from "../../component/ItemBlock/itemBlock.jsx"; // перевірте шлях
+import ItemBlock from "../../component/ItemBlock/itemBlock.jsx"; 
 import VinCoder from "../../component/VinCoder/VinCoder";
 import styles from "./Main.module.scss";
 
@@ -9,7 +9,7 @@ export const Main = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch("http://localhost:5158/api/cars") 
+    fetch("http://localhost:5158/api/cars?verifiedVin=1")
       .then((res) => {
         if (!res.ok) throw new Error("Помилка завантаження авто");
         return res.json();

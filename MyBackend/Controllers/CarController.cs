@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
+using System;
 
 namespace CarApi.Controllers
 {
@@ -30,7 +31,6 @@ namespace CarApi.Controllers
         {
             if (!ModelState.IsValid)
             {
-                // Формуємо список помилок валідації
                 var errors = ModelState.Values
                     .SelectMany(v => v.Errors)
                     .Select(e => e.ErrorMessage)
@@ -51,7 +51,6 @@ namespace CarApi.Controllers
                 {
                     if (file.Length > 0)
                     {
-                        // Генеруємо унікальне ім'я файлу
                         var fileName = Path.GetRandomFileName() + Path.GetExtension(file.FileName);
                         var filePath = Path.Combine(uploadPath, fileName);
 
@@ -63,13 +62,12 @@ namespace CarApi.Controllers
                 }
             }
 
-            // Фільтруємо тільки підтримувані формати зображень
             var filteredPaths = photoPaths
                 .Where(p => p.StartsWith("/uploads/") &&
-                            (p.EndsWith(".jpg", System.StringComparison.OrdinalIgnoreCase) ||
-                             p.EndsWith(".jpeg", System.StringComparison.OrdinalIgnoreCase) ||
-                             p.EndsWith(".png", System.StringComparison.OrdinalIgnoreCase) ||
-                             p.EndsWith(".webp", System.StringComparison.OrdinalIgnoreCase)))
+                            (p.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) ||
+                             p.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase) ||
+                             p.EndsWith(".png", StringComparison.OrdinalIgnoreCase) ||
+                             p.EndsWith(".webp", StringComparison.OrdinalIgnoreCase)))
                 .ToList();
 
             var car = new Car
@@ -119,10 +117,48 @@ namespace CarApi.Controllers
             return car;
         }
 
+        // Основний GET з фільтром verifiedVin
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Car>>> GetAllCars()
+        public async Task<ActionResult<IEnumerable<Car>>> GetAllCars([FromQuery] int? verifiedVin)
         {
-            return await _context.Cars.ToListAsync();
+            Console.WriteLine($"verifiedVin parameter received: {verifiedVin}");
+
+            IQueryable<Car> query = _context.Cars;
+
+            if (verifiedVin.HasValue)
+            {
+                bool isVerified = verifiedVin.Value == 1;
+                query = query.Where(c => c.VerifiedVin == isVerified);
+                Console.WriteLine($"Filtering cars where VerifiedVin == {isVerified}");
+            }
+            else
+            {
+                Console.WriteLine("No filter applied");
+            }
+
+            var cars = await query.ToListAsync();
+
+            Console.WriteLine($"Number of cars returned: {cars.Count}");
+
+            return Ok(cars);
         }
+
+[HttpPatch("{id}/verify")]
+public async Task<IActionResult> VerifyCar(int id)
+{
+    var car = await _context.Cars.FindAsync(id);
+    if (car == null)
+        return NotFound();
+
+    if (!car.VerifiedVin)
+    {
+        car.VerifiedVin = true;
+        await _context.SaveChangesAsync();
+    }
+
+    return NoContent();
+}
+
+
     }
 }

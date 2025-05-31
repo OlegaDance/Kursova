@@ -17,6 +17,10 @@
       "PackagePath": "staticwebassets\\uploads\\m1n3rjvn.4aa.jpg"
     },
     {
+      "Id": "C:\\Users\\MrKyg\\Desktop\\xd\\Kursova\\MyBackend\\wwwroot\\uploads\\zckw4vnr.mqk.jpg",
+      "PackagePath": "staticwebassets\\uploads\\zckw4vnr.mqk.jpg"
+    },
+    {
       "Id": "obj\\Debug\\net9.0\\staticwebassets\\msbuild.MyBackend.Microsoft.AspNetCore.StaticWebAssetEndpoints.props",
       "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssetEndpoints.props"
     },

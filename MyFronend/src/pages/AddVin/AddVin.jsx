@@ -113,7 +113,8 @@ const AddVin = () => {
 
     try {
       const formData = new FormData();
-      formData.append('photo', photoFile);
+      formData.append('PhotoPaths', photoFile);
+
 
       console.log("Дані, що відправляються у базу:", carData);
 
@@ -204,6 +205,7 @@ const AddVin = () => {
             />
           </label>
         </div>
+        
 
         <button type="submit">Відправити дані</button>
       </form>
