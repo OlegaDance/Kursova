@@ -143,22 +143,21 @@ namespace CarApi.Controllers
             return Ok(cars);
         }
 
-[HttpPatch("{id}/verify")]
-public async Task<IActionResult> VerifyCar(int id)
-{
-    var car = await _context.Cars.FindAsync(id);
-    if (car == null)
-        return NotFound();
+        [HttpPatch("{id}/verify")]
+        public async Task<IActionResult> VerifyCar(int id)
+        {
+            var car = await _context.Cars.FindAsync(id);
+            if (car == null)
+                return NotFound();
 
-    if (!car.VerifiedVin)
-    {
-        car.VerifiedVin = true;
-        await _context.SaveChangesAsync();
-    }
+            if (!car.VerifiedVin)
+            {
+                car.VerifiedVin = true;
+                await _context.SaveChangesAsync();
+            }
 
-    return NoContent();
-}
-
-
+            return NoContent();
+        }
     }
 }
+

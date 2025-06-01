@@ -1,0 +1,153 @@
+.carPage {
+  max-width: 1000px;
+  margin: 2rem auto;
+  padding: 2rem 3rem;
+  background: linear-gradient(135deg, #f8f9fa, #ffffff);
+  border-radius: 20px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: #222;
+
+  h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    color: #2c3e50;
+    font-weight: bold;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 0.5rem;
+  }
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+
+  p {
+    font-size: 1rem;
+    background-color: #f0f4f8;
+    padding: 0.8rem 1rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+
+    strong {
+      color: #333;
+    }
+  }
+}
+
+.photos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+  margin: 2rem 0;
+
+  .photo {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 14px;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease;
+
+    &:hover {
+      transform: scale(1.05);
+    }
+  }
+}
+
+.comments {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 2px dashed #ccc;
+
+  h2 {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    color: #555;
+  }
+
+  p {
+    font-size: 1rem;
+    color: #777;
+  }
+}
+
+.comments {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 2px dashed #ccc;
+
+  h2 {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    color: #444;
+  }
+}
+
+.commentForm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.commentInput {
+  width: 100%;
+  resize: vertical;
+  padding: 1rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background-color: #fdfdfd;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: border 0.3s;
+
+  &:focus {
+    border-color: #007bff;
+    outline: none;
+  }
+}
+
+.commentButton {
+  align-self: flex-end;
+  padding: 0.5rem 1.5rem;
+  font-size: 1rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #0056b3;
+  }
+}
+
+.commentList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.comment {
+  background-color: #f8f9fa;
+  border-radius: 10px;
+  padding: 1rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+
+  strong {
+    display: block;
+    margin-bottom: 0.3rem;
+    color: #333;
+  }
+
+  p {
+    margin: 0;
+    color: #555;
+  }
+}

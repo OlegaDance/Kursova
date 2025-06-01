@@ -7,6 +7,7 @@ import AddCarPage  from "./pages/AddCarPage/AddCarPage";
 import AddVin from "./pages/AddVin/AddVin";
 import Admin from "./pages/Admin/Admin";
 import TestVin from "./pages/TestVin/TestVin";
+import CarPage from "./pages/CarPage/CarPage";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path="/AddVin" element={<AddVin />} />
           <Route path="/Admin" element={<Admin />} />
           <Route path="/TestVin" element={<TestVin />} />
+          <Route path="/car/:id" element={<CarPage />} />
         </Routes>
       </div>
     </div>

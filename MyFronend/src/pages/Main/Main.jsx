@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import ItemBlock from "../../component/ItemBlock/itemBlock.jsx"; 
+import ItemBlock from "../../component/ItemBlock/itemBlock.jsx";
 import VinCoder from "../../component/VinCoder/VinCoder";
+import { Link } from "react-router-dom";
 import styles from "./Main.module.scss";
 
 export const Main = () => {
@@ -34,28 +35,29 @@ export const Main = () => {
       <div className={styles.carsList}>
         {cars.length === 0 && <p>Автомобілі не знайдені</p>}
         {cars.map((car) => (
-          <ItemBlock
-            key={car.id}
-            id={car.id}
-            make={car.make}
-            model={car.model}
-            modelYear={car.modelYear}
-            body={car.body}
-            trim={car.trim}
-            series={car.series}
-            drive={car.drive}
-            engineDisplacement={car.engineDisplacement}
-            fuelTypePrimary={car.fuelTypePrimary}
-            manufacturer={car.manufacturer}
-            manufacturerAddress={car.manufacturerAddress}
-            plantCompany={car.plantCompany}
-            plantCountry={car.plantCountry}
-            plantState={car.plantState}
-            numberOfDoors={car.numberOfDoors}
-            maxWeight={car.maxWeight}
-            price={car.price}
-            photoPaths={car.photoPaths || []}
-          />
+          <Link to={`/car/${car.id}`} key={car.id} className={styles.link}>
+            <ItemBlock
+              id={car.id}
+              make={car.make}
+              model={car.model}
+              modelYear={car.modelYear}
+              body={car.body}
+              trim={car.trim}
+              series={car.series}
+              drive={car.drive}
+              engineDisplacement={car.engineDisplacement}
+              fuelTypePrimary={car.fuelTypePrimary}
+              manufacturer={car.manufacturer}
+              manufacturerAddress={car.manufacturerAddress}
+              plantCompany={car.plantCompany}
+              plantCountry={car.plantCountry}
+              plantState={car.plantState}
+              numberOfDoors={car.numberOfDoors}
+              maxWeight={car.maxWeight}
+              price={car.price}
+              photoPaths={car.photoPaths || []}
+            />
+          </Link>
         ))}
       </div>
     </div>

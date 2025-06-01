@@ -12,7 +12,8 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <Auth0Provider
       domain={domain}
       clientId={clientId}
-      authorizationParams={{ redirect_uri: 'http://localhost:5173/' }}
+      authorizationParams={{ redirect_uri: "http://localhost:5173/" }}
+      cacheLocation="localstorage"
     >
       <App />
     </Auth0Provider>

@@ -192,3 +192,4 @@ C:\Users\MrKyg\Desktop\xd\Kursova\MyBackend\bin\Debug\net9.0\Swashbuckle.AspNetC
 C:\Users\MrKyg\Desktop\xd\Kursova\MyBackend\bin\Debug\net9.0\Swashbuckle.AspNetCore.SwaggerGen.dll
 C:\Users\MrKyg\Desktop\xd\Kursova\MyBackend\bin\Debug\net9.0\Swashbuckle.AspNetCore.SwaggerUI.dll
 C:\Users\MrKyg\Desktop\xd\Kursova\MyBackend\bin\Debug\net9.0\MyBackend.staticwebassets.runtime.json
+C:\Users\MrKyg\Desktop\xd\Kursova\MyBackend\bin\Debug\net9.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
