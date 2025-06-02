@@ -9,7 +9,12 @@ using System.IO;
 var builder = WebApplication.CreateBuilder(args);
 
 // Додаємо сервіси контролерів
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNamingPolicy = null;
+        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+    });
 
 // Swagger для документації API
 builder.Services.AddEndpointsApiExplorer();
@@ -17,7 +22,6 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Car API", Version = "v1" });
 
-    // Додамо підтримку Bearer токену в Swagger UI
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Description = "JWT Authorization header using the Bearer scheme. Example: 'Bearer {token}'",
@@ -25,6 +29,7 @@ builder.Services.AddSwaggerGen(c =>
         In = ParameterLocation.Header,
         Type = SecuritySchemeType.ApiKey
     });
+
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
@@ -32,7 +37,7 @@ builder.Services.AddSwaggerGen(c =>
             { 
                 Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" } 
             },
-            new string[] {}
+            Array.Empty<string>()
         }
     });
 });
@@ -55,30 +60,36 @@ builder.Services.AddDbContext<CarContext>(options =>
            .EnableSensitiveDataLogging()
            .LogTo(Console.WriteLine));
 
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
+        options.JsonSerializerOptions.MaxDepth = 64; 
+    });
+
 // --- Аутентифікація JWT Auth0 ---
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         options.Authority = "https://dev-j43h7ft023fhny4u.us.auth0.com";
-        options.Audience = "https://dev-j43h7ft023fhny4u.us.auth0.com/api/v2/";  
+        options.Audience = "https://dev-j43h7ft023fhny4u.us.auth0.com/api/v2/";
         options.RequireHttpsMetadata = false;
         options.TokenValidationParameters = new TokenValidationParameters
-
         {
             ValidateIssuer = true,
-            ValidIssuer = "dev-j43h7ft023fhny4u.us.auth0.com",
+            ValidIssuer = "https://dev-j43h7ft023fhny4u.us.auth0.com",
             ValidateAudience = true,
             ValidAudience = "https://dev-j43h7ft023fhny4u.us.auth0.com/api/v2/",
             ValidateLifetime = true
-            
         };
     });
 
 var app = builder.Build();
 
-// У розробці вмикаємо Swagger UI
+// У розробці вмикаємо Swagger UI і сторінку помилок
 if (app.Environment.IsDevelopment())
 {
+    app.UseDeveloperExceptionPage();
     app.UseSwagger();
     app.UseSwaggerUI();
 }
@@ -95,7 +106,6 @@ app.UseStaticFiles();
 
 app.UseCors("AllowFrontend");
 
-// Додаємо middleware аутентифікації і авторизації
 app.UseAuthentication();
 app.UseAuthorization();
 

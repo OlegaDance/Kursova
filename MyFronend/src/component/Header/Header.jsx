@@ -4,17 +4,26 @@ import { Link } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 
 import LoginBtn from "../../component/loginBtn/LoginBtn.jsx";
-import SyncUser from "../../component/Syncuser/SyncUser.jsx"; // скоригуй шлях, якщо треба
+import SyncUser from "../../component/Syncuser/SyncUser.jsx";
 
 function Header() {
   const { isAuthenticated, loginWithRedirect, logout, user } = useAuth0();
 
   React.useEffect(() => {
     if (isAuthenticated && user) {
-      localStorage.setItem("userId", user.sub);
-      localStorage.setItem("userName", user.name);
-      localStorage.setItem("userEmail", user.email);
-      localStorage.setItem("userPicture", user.picture);
+      const rawSub = user.sub || "";
+      const idString = rawSub.split("|")[1];
+      const idInt = parseInt(idString, 10);
+
+      if (!isNaN(idInt)) {
+        localStorage.setItem("userId", idInt.toString());
+      } else {
+        console.warn("User sub does not contain a valid numeric ID");
+      }
+
+      localStorage.setItem("userName", user.name || "");
+      localStorage.setItem("userEmail", user.email || "");
+      localStorage.setItem("userPicture", user.picture || "");
     }
   }, [isAuthenticated, user]);
 
@@ -25,21 +34,22 @@ function Header() {
         <Link to={"./TestVin"}>Провірка VIN</Link>
         <Link to={"./profilePage"}>Профіль</Link>
       </nav>
-      <Link to={"./AddCarPage"}>
-        <button>Add Dick</button>
-      </Link>
 
-      {isAuthenticated ? (
+      {/* Рендеримо кнопку тільки якщо користувач авторизований */}
+      {isAuthenticated && (
+        <Link to={"./AddCarPage"}>
+          <button>Додати авто</button>
+        </Link>
+      )}
+
+      {isAuthenticated && user ? (
         <>
           <button
-            onClick={() => {
-              console.log("Logging out...");
-              logout({ returnTo: "http://localhost:5173/" });
-            }}
+            onClick={() => logout({ returnTo: "http://localhost:5173/" })}
           >
             Вийти
           </button>
-          <SyncUser />
+          <SyncUser user={user} />
         </>
       ) : (
         <LoginBtn onClick={() => loginWithRedirect()} />

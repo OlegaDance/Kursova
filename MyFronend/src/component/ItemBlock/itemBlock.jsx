@@ -21,7 +21,14 @@ const ItemBlock = ({
   price,
   photoPaths,
 }) => {
-  if (!photoPaths || photoPaths.length === 0) {
+  // Витягуємо масив фото з photoPaths або photoPaths.$values
+  const photos = Array.isArray(photoPaths)
+    ? photoPaths
+    : photoPaths && Array.isArray(photoPaths.$values)
+    ? photoPaths.$values
+    : [];
+
+  if (photos.length === 0) {
     return (
       <div className={styles.card}>
         <div className={styles.noPhoto}>Фото відсутнє</div>
@@ -34,12 +41,18 @@ const ItemBlock = ({
     );
   }
 
-  const isValidPhoto = photoPaths[0]?.match(/^\/uploads\/.+\.(jpg|png|jpeg|webp)$/i);
+  const isValidPhoto = photos[0]?.match(
+    /^\/uploads\/.+\.(jpg|png|jpeg|webp)$/i
+  );
 
   return (
     <div className={styles.card}>
       {isValidPhoto ? (
-        <img className={styles.noPhoto} src={`http://localhost:5158${photoPaths[0]}`} alt="car" />
+        <img
+          className={styles.noPhoto}
+          src={`http://localhost:5158${photos[0]}`}
+          alt="car"
+        />
       ) : (
         <div className={styles.noPhoto}>Неприпустиме фото</div>
       )}
@@ -48,18 +61,42 @@ const ItemBlock = ({
           {make} {model} <span>({modelYear})</span>
         </h2>
         <div className={styles.details}>
-          <p><strong>Body:</strong> {body}</p>
-          <p><strong>Trim:</strong> {trim}</p>
-          <p><strong>Series:</strong> {series}</p>
-          <p><strong>Drive:</strong> {drive}</p>
-          <p><strong>Engine:</strong> {engineDisplacement} L</p>
-          <p><strong>Fuel Type:</strong> {fuelTypePrimary}</p>
-          <p><strong>Manufacturer:</strong> {manufacturer}</p>
-          <p><strong>Address:</strong> {manufacturerAddress}</p>
-          <p><strong>Plant:</strong> {plantCompany}, {plantCountry}, {plantState}</p>
-          <p><strong>Doors:</strong> {numberOfDoors}</p>
-          <p><strong>Max Weight:</strong> {maxWeight} kg</p>
-          <p className={styles.price}><strong>Price:</strong> ${price}</p>
+          <p>
+            <strong>Body:</strong> {body}
+          </p>
+          <p>
+            <strong>Trim:</strong> {trim}
+          </p>
+          <p>
+            <strong>Series:</strong> {series}
+          </p>
+          <p>
+            <strong>Drive:</strong> {drive}
+          </p>
+          <p>
+            <strong>Engine:</strong> {engineDisplacement} L
+          </p>
+          <p>
+            <strong>Fuel Type:</strong> {fuelTypePrimary}
+          </p>
+          <p>
+            <strong>Manufacturer:</strong> {manufacturer}
+          </p>
+          <p>
+            <strong>Address:</strong> {manufacturerAddress}
+          </p>
+          <p>
+            <strong>Plant:</strong> {plantCompany}, {plantCountry}, {plantState}
+          </p>
+          <p>
+            <strong>Doors:</strong> {numberOfDoors}
+          </p>
+          <p>
+            <strong>Max Weight:</strong> {maxWeight} kg
+          </p>
+          <p className={styles.price}>
+            <strong>Price:</strong> ${price}
+          </p>
         </div>
       </div>
     </div>

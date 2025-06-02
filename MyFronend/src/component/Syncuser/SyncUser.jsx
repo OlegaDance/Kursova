@@ -1,41 +1,47 @@
 import React, { useEffect } from "react";
 
-function SyncUser() {
+function SyncUser({ user }) {
   useEffect(() => {
-    const user = {
-      Id: localStorage.getItem("userId"),
-      Name: localStorage.getItem("userName"),
-      Email: localStorage.getItem("userEmail"),
-      PictureUrl: localStorage.getItem("userPicture"),
+    if (!user?.sub) return;
+
+    const syncUser = async () => {
+      try {
+        const dto = {
+          Id: user.sub, // Відправляємо весь user.sub (наприклад "auth0|1234567890")
+          Name: user.name,
+          Email: user.email,
+          PictureUrl: user.picture,
+        };
+
+        const response = await fetch("http://localhost:5158/api/auth/sync", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(dto),
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(
+            `Failed to sync user: ${response.status} ${errorText}`
+          );
+        }
+
+        const data = await response.json();
+        console.log("User synced successfully:", data);
+
+        // Якщо потрібно, збережи в localStorage id з БД
+        localStorage.setItem("userId", data.userId);
+      } catch (error) {
+        console.error("Error syncing user:", error);
+      }
     };
 
-    if (!user.Id) {
-      console.log("No user ID found, skipping sync.");
-      return;
-    }
+    syncUser();
+  }, [user]);
 
-    fetch("http://localhost:5158/api/auth/sync", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(user),
-    })
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error(`Server error: ${res.status}`);
-        }
-        return res.json(); 
-      })
-      .then((data) => {
-        console.log("User synced:", data.message);
-      })
-      .catch((err) => {
-        console.error("Sync failed:", err);
-      });
-  }, []);
-
-  return null; 
+  return null;
 }
 
 export default SyncUser;

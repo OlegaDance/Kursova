@@ -1,14 +1,31 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import styles from "./CarPage.module.scss";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const CarPage = () => {
   const { id } = useParams();
+  const { isAuthenticated, loginWithRedirect, user } = useAuth0();
+
   const [car, setCar] = useState(null);
+  const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const [newComment, setNewComment] = useState("");
+  const [sending, setSending] = useState(false);
+  const [sendError, setSendError] = useState(null);
+
+  // Витягуємо userId з user.sub, якщо є
+  const userId = React.useMemo(() => {
+    if (!user || !user.sub) return null;
+    const parts = user.sub.split("|");
+    const idStr = parts[1] || null;
+    return idStr ? parseInt(idStr, 10) : null;
+  }, [user]);
+
   useEffect(() => {
+    // Завантаження авто
     fetch(`http://localhost:5158/api/cars/${id}`)
       .then((res) => {
         if (!res.ok) throw new Error("Не вдалося завантажити авто");
@@ -22,68 +39,124 @@ const CarPage = () => {
         setError(err.message);
         setLoading(false);
       });
+
+    // Завантаження коментарів
+    fetch(`http://localhost:5158/api/comments/car/${id}`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Не вдалося завантажити коментарі");
+        return res.json();
+      })
+      .then((data) => {
+        const commentsArray = Array.isArray(data.$values) ? data.$values : [];
+        setComments(commentsArray);
+      })
+      .catch((err) => {
+        console.error("Помилка при завантаженні коментарів:", err);
+      });
   }, [id]);
+
+  const handleSendComment = () => {
+    if (!newComment.trim()) return;
+    if (!isAuthenticated || !userId) return;
+
+    setSending(true);
+    setSendError(null);
+
+    const commentToSend = {
+      UserId: userId,
+      Text: newComment.trim(),
+    };
+
+    fetch(`http://localhost:5158/api/comments/car/${id}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(commentToSend),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Не вдалося додати коментар");
+        return res.json();
+      })
+      .then((addedComment) => {
+        setComments((prev) => [...prev, addedComment]);
+        setNewComment("");
+        setSending(false);
+      })
+      .catch((err) => {
+        setSendError(err.message);
+        setSending(false);
+      });
+  };
 
   if (loading) return <div>Завантаження...</div>;
   if (error) return <div>Помилка: {error}</div>;
 
+  const photos = Array.isArray(car?.PhotoPaths)
+    ? car.PhotoPaths
+    : car?.PhotoPaths && Array.isArray(car.PhotoPaths.$values)
+    ? car.PhotoPaths.$values
+    : [];
+
   return (
     <div className={styles.carPage}>
       <h1>
-        {car.make} {car.model} ({car.modelYear})
+        {car.Make} {car.Model} ({car.ModelYear})
       </h1>
 
       <div className={styles.infoGrid}>
         <p>
-          <strong>Кузов:</strong> {car.body}
+          <strong>Кузов:</strong> {car.Body}
         </p>
         <p>
-          <strong>Комплектація (trim):</strong> {car.trim}
+          <strong>Комплектація (trim):</strong> {car.Trim}
         </p>
         <p>
-          <strong>Серія:</strong> {car.series}
+          <strong>Серія:</strong> {car.Series}
         </p>
         <p>
-          <strong>Привід:</strong> {car.drive}
+          <strong>Привід:</strong> {car.Drive}
         </p>
         <p>
-          <strong>Об'єм двигуна:</strong> {car.engineDisplacement} л
+          <strong>Об'єм двигуна:</strong> {car.EngineDisplacement} л
         </p>
         <p>
-          <strong>Тип пального:</strong> {car.fuelTypePrimary}
+          <strong>Тип пального:</strong> {car.FuelTypePrimary}
         </p>
         <p>
-          <strong>Кількість дверей:</strong> {car.numberOfDoors}
+          <strong>Кількість дверей:</strong> {car.NumberOfDoors}
         </p>
         <p>
-          <strong>Макс. вага:</strong> {car.maxWeight} кг
+          <strong>Макс. вага:</strong> {car.MaxWeight} кг
         </p>
         <p>
-          <strong>Виробник:</strong> {car.manufacturer}
+          <strong>Виробник:</strong> {car.Manufacturer}
         </p>
         <p>
-          <strong>Адреса виробника:</strong> {car.manufacturerAddress}
+          <strong>Адреса виробника:</strong> {car.ManufacturerAddress}
         </p>
         <p>
-          <strong>Завод:</strong> {car.plantCompany}
+          <strong>Завод:</strong> {car.PlantCompany}
         </p>
         <p>
-          <strong>Країна заводу:</strong> {car.plantCountry}
+          <strong>Країна заводу:</strong> {car.PlantCountry}
         </p>
         <p>
-          <strong>Штат заводу:</strong> {car.plantState}
+          <strong>Штат заводу:</strong> {car.PlantState}
         </p>
         <p>
-          <strong>Ціна:</strong> {car.price} $
+          <strong>Ціна:</strong> {car.Price} $
         </p>
       </div>
 
       <div className={styles.photos}>
-        {car.photoPaths?.length > 0 ? (
-          car.photoPaths.map((path, index) => (
+        {photos.length > 0 ? (
+          photos.map((path, index) => (
             <img
               key={index}
-              src={`http://localhost:5158${path}`}
+              src={`http://localhost:5158${
+                path.startsWith("/") ? "" : "/"
+              }${path}`}
               alt={`Фото ${index + 1}`}
               className={styles.photo}
             />
@@ -96,27 +169,50 @@ const CarPage = () => {
       <div className={styles.comments}>
         <h2>Коментарі</h2>
 
-        {/* Поле для введення коментаря */}
-        <div className={styles.commentForm}>
-          <textarea
-            className={styles.commentInput}
-            placeholder="Напишіть ваш коментар..."
-            rows={3}
-          />
-          <button className={styles.commentButton}>Надіслати</button>
-        </div>
+        {isAuthenticated ? (
+          <div className={styles.commentForm}>
+            <textarea
+              className={styles.commentInput}
+              placeholder="Напишіть ваш коментар..."
+              rows={3}
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              disabled={sending}
+            />
+            <button
+              className={styles.commentButton}
+              onClick={handleSendComment}
+              disabled={sending || !newComment.trim()}
+            >
+              {sending ? "Надсилання..." : "Надіслати"}
+            </button>
+            {sendError && <p style={{ color: "red" }}>Помилка: {sendError}</p>}
+          </div>
+        ) : (
+          <p>
+            Щоб залишити коментар, будь ласка,{" "}
+            <button
+              onClick={() => loginWithRedirect()}
+              className={styles.loginBtn}
+            >
+              увійдіть
+            </button>
+            .
+          </p>
+        )}
 
-        {/* Заготовка для виводу коментарів */}
         <div className={styles.commentList}>
-          <div className={styles.comment}>
-            <strong>Іван:</strong>
-            <p>Справжня ракета, а не машина! 🔥</p>
-          </div>
-          <div className={styles.comment}>
-            <strong>Олена:</strong>
-            <p>Дуже крута комплектація, хотіла б собі таку!</p>
-          </div>
-          {/* Тут будуть інші коментарі */}
+          {comments.length > 0 ? (
+            comments.map((comment) => (
+              <div key={comment.Id} className={styles.comment}>
+                <strong>{comment.UserName}:</strong>
+                <p>{comment.Text}</p>
+                <small>{new Date(comment.CreatedAt).toLocaleString()}</small>
+              </div>
+            ))
+          ) : (
+            <p>Коментарів ще немає</p>
+          )}
         </div>
       </div>
     </div>

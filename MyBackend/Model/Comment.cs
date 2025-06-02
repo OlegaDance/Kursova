@@ -1,28 +1,26 @@
+using System;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CarApi.Models
 {
     public class Comment
-    {
-        [Key]
-        public int Id { get; set; }
+{
+    [Key]
+    public int Id { get; set; }
 
-        [Required]
-        public string Text { get; set; }
+    [Required]
+    public int UserId { get; set; }
 
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    [Required]
+    public string Text { get; set; }
 
-        [Required]
-        public string UserId { get; set; }
+    [Required]
+    public int CarId { get; set; }
 
-        [ForeignKey("UserId")]
-        public User User { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        [Required]
-        public int CarId { get; set; }
+    public User User { get; set; }
+    public Car Car { get; set; }
+}
 
-        [ForeignKey("CarId")]
-        public Car Car { get; set; }
-    }
 }

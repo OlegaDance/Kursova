@@ -110,35 +110,65 @@ namespace CarApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Car>> GetCar(int id)
         {
-            var car = await _context.Cars.FindAsync(id);
+            var car = await _context.Cars
+                .Include(c => c.Comments)
+                .ThenInclude(c => c.User)
+                .FirstOrDefaultAsync(c => c.Id == id);
+
             if (car == null)
                 return NotFound();
 
             return car;
         }
 
-        // Основний GET з фільтром verifiedVin
+[HttpGet("search")]
+public async Task<ActionResult<IEnumerable<Car>>> SearchCars(
+    [FromQuery] string? make,
+    [FromQuery] string? model,
+    [FromQuery] int? modelYear,
+    [FromQuery] decimal? minPrice,
+    [FromQuery] decimal? maxPrice,
+    [FromQuery] string? plantCompany)
+{
+    IQueryable<Car> query = _context.Cars;
+
+    if (!string.IsNullOrWhiteSpace(make))
+        query = query.Where(c => c.Make.Contains(make));
+
+    if (!string.IsNullOrWhiteSpace(model))
+        query = query.Where(c => c.Model.Contains(model));
+
+    if (modelYear.HasValue)
+        query = query.Where(c => c.ModelYear == modelYear.Value);
+
+    if (minPrice.HasValue)
+        query = query.Where(c => c.Price >= minPrice.Value);
+
+    if (maxPrice.HasValue)
+        query = query.Where(c => c.Price <= maxPrice.Value);
+
+    if (!string.IsNullOrWhiteSpace(plantCompany))
+        query = query.Where(c => c.PlantCompany.Contains(plantCompany));
+
+    var cars = await query.ToListAsync();
+
+    return Ok(cars);
+}
+
+
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Car>>> GetAllCars([FromQuery] int? verifiedVin)
         {
-            Console.WriteLine($"verifiedVin parameter received: {verifiedVin}");
-
             IQueryable<Car> query = _context.Cars;
 
             if (verifiedVin.HasValue)
             {
                 bool isVerified = verifiedVin.Value == 1;
                 query = query.Where(c => c.VerifiedVin == isVerified);
-                Console.WriteLine($"Filtering cars where VerifiedVin == {isVerified}");
-            }
-            else
-            {
-                Console.WriteLine("No filter applied");
             }
 
             var cars = await query.ToListAsync();
-
-            Console.WriteLine($"Number of cars returned: {cars.Count}");
 
             return Ok(cars);
         }
@@ -160,4 +190,3 @@ namespace CarApi.Controllers
         }
     }
 }
-

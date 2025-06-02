@@ -42,6 +42,8 @@ namespace CarApi.Models
         // Зберігаємо шляхи фото у JSON рядку у базі
         public string PhotoPathsJson { get; set; }
 
+        public List<Comment> Comments { get; set; } = new List<Comment>();
+
         [NotMapped]
         public List<string> PhotoPaths
         {

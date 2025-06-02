@@ -1,5 +1,6 @@
 C:\Users\MrKyg\Desktop\xd\Kursova\MyBackend\bin\Debug\net9.0\appsettings.Development.json
 C:\Users\MrKyg\Desktop\xd\Kursova\MyBackend\bin\Debug\net9.0\appsettings.json
+C:\Users\MrKyg\Desktop\xd\Kursova\MyBackend\bin\Debug\net9.0\MyBackend.staticwebassets.runtime.json
 C:\Users\MrKyg\Desktop\xd\Kursova\MyBackend\bin\Debug\net9.0\MyBackend.staticwebassets.endpoints.json
 C:\Users\MrKyg\Desktop\xd\Kursova\MyBackend\bin\Debug\net9.0\MyBackend.exe
 C:\Users\MrKyg\Desktop\xd\Kursova\MyBackend\bin\Debug\net9.0\MyBackend.deps.json
@@ -9,6 +10,7 @@ C:\Users\MrKyg\Desktop\xd\Kursova\MyBackend\bin\Debug\net9.0\MyBackend.pdb
 C:\Users\MrKyg\Desktop\xd\Kursova\MyBackend\bin\Debug\net9.0\Azure.Core.dll
 C:\Users\MrKyg\Desktop\xd\Kursova\MyBackend\bin\Debug\net9.0\Azure.Identity.dll
 C:\Users\MrKyg\Desktop\xd\Kursova\MyBackend\bin\Debug\net9.0\Humanizer.dll
+C:\Users\MrKyg\Desktop\xd\Kursova\MyBackend\bin\Debug\net9.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
 C:\Users\MrKyg\Desktop\xd\Kursova\MyBackend\bin\Debug\net9.0\Microsoft.AspNetCore.OpenApi.dll
 C:\Users\MrKyg\Desktop\xd\Kursova\MyBackend\bin\Debug\net9.0\Microsoft.Bcl.AsyncInterfaces.dll
 C:\Users\MrKyg\Desktop\xd\Kursova\MyBackend\bin\Debug\net9.0\Microsoft.Build.Locator.dll
@@ -51,6 +53,9 @@ C:\Users\MrKyg\Desktop\xd\Kursova\MyBackend\bin\Debug\net9.0\Mono.TextTemplating
 C:\Users\MrKyg\Desktop\xd\Kursova\MyBackend\bin\Debug\net9.0\SQLitePCLRaw.batteries_v2.dll
 C:\Users\MrKyg\Desktop\xd\Kursova\MyBackend\bin\Debug\net9.0\SQLitePCLRaw.core.dll
 C:\Users\MrKyg\Desktop\xd\Kursova\MyBackend\bin\Debug\net9.0\SQLitePCLRaw.provider.e_sqlite3.dll
+C:\Users\MrKyg\Desktop\xd\Kursova\MyBackend\bin\Debug\net9.0\Swashbuckle.AspNetCore.Swagger.dll
+C:\Users\MrKyg\Desktop\xd\Kursova\MyBackend\bin\Debug\net9.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\Users\MrKyg\Desktop\xd\Kursova\MyBackend\bin\Debug\net9.0\Swashbuckle.AspNetCore.SwaggerUI.dll
 C:\Users\MrKyg\Desktop\xd\Kursova\MyBackend\bin\Debug\net9.0\System.ClientModel.dll
 C:\Users\MrKyg\Desktop\xd\Kursova\MyBackend\bin\Debug\net9.0\System.CodeDom.dll
 C:\Users\MrKyg\Desktop\xd\Kursova\MyBackend\bin\Debug\net9.0\System.Composition.AttributedModel.dll
@@ -188,8 +193,3 @@ C:\Users\MrKyg\Desktop\xd\Kursova\MyBackend\obj\Debug\net9.0\refint\MyBackend.dl
 C:\Users\MrKyg\Desktop\xd\Kursova\MyBackend\obj\Debug\net9.0\MyBackend.pdb
 C:\Users\MrKyg\Desktop\xd\Kursova\MyBackend\obj\Debug\net9.0\MyBackend.genruntimeconfig.cache
 C:\Users\MrKyg\Desktop\xd\Kursova\MyBackend\obj\Debug\net9.0\ref\MyBackend.dll
-C:\Users\MrKyg\Desktop\xd\Kursova\MyBackend\bin\Debug\net9.0\Swashbuckle.AspNetCore.Swagger.dll
-C:\Users\MrKyg\Desktop\xd\Kursova\MyBackend\bin\Debug\net9.0\Swashbuckle.AspNetCore.SwaggerGen.dll
-C:\Users\MrKyg\Desktop\xd\Kursova\MyBackend\bin\Debug\net9.0\Swashbuckle.AspNetCore.SwaggerUI.dll
-C:\Users\MrKyg\Desktop\xd\Kursova\MyBackend\bin\Debug\net9.0\MyBackend.staticwebassets.runtime.json
-C:\Users\MrKyg\Desktop\xd\Kursova\MyBackend\bin\Debug\net9.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll

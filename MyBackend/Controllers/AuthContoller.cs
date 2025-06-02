@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using CarApi.Data;
 using CarApi.Models;
 using System;
@@ -18,21 +19,55 @@ namespace CarApi.Controllers
         }
 
         [HttpPost("sync")]
-        public async Task<IActionResult> SyncUser([FromBody] User user)
+        public async Task<IActionResult> SyncUser([FromBody] SyncUserDto dto)
         {
-            if (user == null || string.IsNullOrEmpty(user.Id))
+            if (dto == null || string.IsNullOrWhiteSpace(dto.Id))
                 return BadRequest("Invalid user data");
 
-            var existingUser = await _context.Users.FindAsync(user.Id);
-            if (existingUser == null)
+            try
             {
-                user.CreatedAt = DateTime.UtcNow;
-                _context.Users.Add(user);
+                var existingUser = await _context.Users
+                    .FirstOrDefaultAsync(u => u.Auth0Sub == dto.Id);
+
+                if (existingUser == null)
+                {
+                    var newUser = new User
+                    {
+                        Auth0Sub = dto.Id,
+                        Name = dto.Name,
+                        Email = dto.Email,
+                        PictureUrl = dto.PictureUrl,
+                        CreatedAt = DateTime.UtcNow
+                    };
+
+                    _context.Users.Add(newUser);
+                    await _context.SaveChangesAsync();
+
+                    return Ok(new { userId = newUser.Id, message = "User created and synced" });
+                }
+
+                existingUser.Name = dto.Name;
+                existingUser.Email = dto.Email;
+                existingUser.PictureUrl = dto.PictureUrl;
+
                 await _context.SaveChangesAsync();
+
+                return Ok(new { userId = existingUser.Id, message = "User synced" });
             }
-
-           return Ok(new { message = "Все заїбато" });
-
+            catch (Exception ex)
+            {
+                // Тут можна додати логування ex.Message, ex.StackTrace і т.д.
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
+    }
+
+    // DTO-клас для прийому даних з фронтенду
+    public class SyncUserDto
+    {
+        public string Id { get; set; }         // це Auth0Sub, наприклад "auth0|1234567890"
+        public string Name { get; set; }
+        public string Email { get; set; }
+        public string PictureUrl { get; set; }
     }
 }
