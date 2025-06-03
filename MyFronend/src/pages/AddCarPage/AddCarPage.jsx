@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./AddCarPage.module.scss";
 import { Link } from "react-router-dom";
 
 export default function AddCarPage() {
+  // Ініціалізація стейту з localStorage
   const [form, setForm] = useState({
     vinCode: "",
     vehicleId: "",
@@ -29,13 +30,32 @@ export default function AddCarPage() {
     checkDigit: "",
     sequentialNumber: "",
     price: "",
-    VerifiedVin: false, 
+    VerifiedVin: false,
+    userPhoneNumber: localStorage.getItem("phoneNumber") || "", // беремо phoneNumber
     photoPaths: [],
   });
 
+  // Якщо localStorage зміниться в іншому вкладці/вікні - оновлюємо телефон тут
+  useEffect(() => {
+    const handleStorageChange = (event) => {
+      if (event.key === "phoneNumber") {
+        setForm((prev) => ({ ...prev, userPhoneNumber: event.newValue || "" }));
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []);
+
   const handleChange = (e) => {
-    const { id, value } = e.target;
-    setForm((prev) => ({ ...prev, [id]: value }));
+    const { id, value, type, checked } = e.target;
+    setForm((prev) => ({
+      ...prev,
+      [id]: type === "checkbox" ? checked : value,
+    }));
   };
 
   const handleFileChange = (e) => {
@@ -51,7 +71,6 @@ export default function AddCarPage() {
       if (key === "photoPaths") {
         value.forEach((file) => formData.append("PhotoPaths", file));
       } else if (typeof value === "boolean") {
-        
         formData.append(
           key.charAt(0).toUpperCase() + key.slice(1),
           value ? "true" : "false"
@@ -63,6 +82,9 @@ export default function AddCarPage() {
         );
       }
     });
+
+    const userId = localStorage.getItem("userId");
+    formData.append("UserId", userId || "");
 
     try {
       const response = await fetch("http://localhost:5158/api/cars", {
@@ -76,10 +98,8 @@ export default function AddCarPage() {
         return;
       }
 
-      const data = await response.json();
-      alert("Автомобіль додано! ID: " + data.id);
+      alert("Автомобіль додано!");
 
-    
       setForm({
         vinCode: "",
         vehicleId: "",
@@ -106,40 +126,13 @@ export default function AddCarPage() {
         checkDigit: "",
         sequentialNumber: "",
         price: "",
-        VerifiedVin: false, 
+        VerifiedVin: false,
+        userPhoneNumber: "", // очищаємо після відправки
         photoPaths: [],
       });
     } catch (error) {
       alert("Помилка мережі: " + error.message);
     }
-  };
-
-  const fieldLabels = {
-    vinCode: "VIN-код",
-    vehicleId: "Ідентифікатор транспортного засобу",
-    make: "Марка",
-    model: "Модель",
-    modelYear: "Рік випуску",
-    productType: "Тип продукту",
-    body: "Кузов",
-    trim: "Комплектація",
-    series: "Серія",
-    drive: "Привід",
-    engineDisplacement: "Об'єм двигуна (л)",
-    fuelTypePrimary: "Тип палива",
-    engineModel: "Модель двигуна",
-    manufacturer: "Виробник",
-    manufacturerAddress: "Адреса виробника",
-    plantCompany: "Компанія заводу",
-    plantCountry: "Країна заводу",
-    plantState: "Штат/Область заводу",
-    fuelConsumptionExtraUrban: "Витрата палива (поза містом)",
-    fuelConsumptionUrban: "Витрата палива (місто)",
-    numberOfDoors: "Кількість дверей",
-    maxWeight: "Максимальна вага (кг)",
-    checkDigit: "Контрольна цифра",
-    sequentialNumber: "Послідовний номер",
-    price: "Ціна (у валюті)",
   };
 
   const numberFields = [
@@ -152,6 +145,35 @@ export default function AddCarPage() {
     "price",
   ];
 
+  const fieldLabels = {
+    vinCode: "VIN код",
+    vehicleId: "Ідентифікатор транспортного засобу",
+    make: "Марка",
+    model: "Модель",
+    modelYear: "Рік моделі",
+    productType: "Тип продукту",
+    body: "Кузов",
+    trim: "Комплектація",
+    series: "Серія",
+    drive: "Привід",
+    engineDisplacement: "Об’єм двигуна",
+    fuelTypePrimary: "Тип палива",
+    engineModel: "Модель двигуна",
+    manufacturer: "Виробник",
+    manufacturerAddress: "Адреса виробника",
+    plantCompany: "Завод компанії",
+    plantCountry: "Країна заводу",
+    plantState: "Штат заводу",
+    fuelConsumptionExtraUrban: "Витрата палива поза містом",
+    fuelConsumptionUrban: "Витрата палива в місті",
+    numberOfDoors: "Кількість дверей",
+    maxWeight: "Максимальна вага",
+    checkDigit: "Контрольна цифра",
+    sequentialNumber: "Порядковий номер",
+    price: "Ціна",
+    userPhoneNumber: "Номер телефону користувача (не обов’язково)",
+  };
+
   return (
     <div className={styles.formContainer}>
       <h2 className={styles.title}>Додати автомобіль</h2>
@@ -161,20 +183,27 @@ export default function AddCarPage() {
           <React.Fragment key={field}>
             <label htmlFor={field}>
               {label}
-              {numberFields.includes(field) ? " (число)" : ""}
-              :
+              {numberFields.includes(field) ? " (число)" : ""}:
             </label>
-            <input
-              type={numberFields.includes(field) ? "number" : "text"}
-              id={field}
-              value={form[field]}
-              onChange={handleChange}
-              required
-            />
+
+            {field === "VerifiedVin" ? (
+              <input
+                type="checkbox"
+                id={field}
+                checked={form[field]}
+                onChange={handleChange}
+              />
+            ) : (
+              <input
+                type={numberFields.includes(field) ? "number" : "text"}
+                id={field}
+                value={form[field]}
+                onChange={handleChange}
+                required={field !== "userPhoneNumber"} // телефон — необов’язковий
+              />
+            )}
           </React.Fragment>
         ))}
-
-      
 
         <label htmlFor="photoPaths">Фото (можна кілька):</label>
         <input

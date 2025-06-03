@@ -39,6 +39,12 @@ namespace CarApi.Models
         public decimal Price { get; set; }
         public bool VerifiedVin { get; set; }
 
+        public int UserId { get; set; }
+
+         [Phone]
+    [MaxLength(20)]
+    public string UserPhoneNumber { get; set; } 
+
         // Зберігаємо шляхи фото у JSON рядку у базі
         public string PhotoPathsJson { get; set; }
 

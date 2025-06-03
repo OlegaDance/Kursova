@@ -34,6 +34,10 @@ namespace CarApi.Controllers
             if (user == null)
                 return NotFound();
 
+            // Додано для перевірки у виводі дебагу номера телефону
+            System.Diagnostics.Debug.WriteLine($"User Id: {user.Id}, PhoneNumber: {user.PhoneNumber}");
+
+            // Повертаємо повний об'єкт користувача, включно з номером телефону
             return Ok(user);
         }
 
@@ -70,6 +74,7 @@ namespace CarApi.Controllers
             existingUser.Name = user.Name;
             existingUser.Email = user.Email;
             existingUser.PictureUrl = user.PictureUrl;
+            existingUser.PhoneNumber = user.PhoneNumber; // Оновлення телефону тут теж
 
             await _context.SaveChangesAsync();
             return NoContent();
@@ -84,6 +89,20 @@ namespace CarApi.Controllers
                 return NotFound();
 
             _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        // PUT: api/users/phone
+        [HttpPut("phone")]
+        public async Task<IActionResult> UpdatePhone([FromBody] UpdatePhoneDto dto)
+        {
+            var user = await _context.Users.FindAsync(dto.UserId);
+            if (user == null)
+                return NotFound("User not found");
+
+            user.PhoneNumber = dto.PhoneNumber;
             await _context.SaveChangesAsync();
 
             return NoContent();

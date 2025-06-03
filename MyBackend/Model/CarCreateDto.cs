@@ -37,5 +37,10 @@ namespace CarApi.DTOs
         public string SequentialNumber { get; set; }
         public decimal Price { get; set; }
         public bool VerifiedVin { get; set; }
+
+        [Phone]
+[MaxLength(20)]
+public string UserPhoneNumber { get; set; }
+
     }
 }

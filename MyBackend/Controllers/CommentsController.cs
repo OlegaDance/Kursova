@@ -30,7 +30,7 @@ public async Task<IActionResult> GetCommentsForCar(int carId)
     var comments = await _context.Comments
         .Where(c => c.CarId == carId)
         .OrderByDescending(c => c.CreatedAt)
-        .Include(c => c.User) // Завантажуємо User
+        .Include(c => c.User) 
         .Select(c => new CommentDto
         {
             Id = c.Id,

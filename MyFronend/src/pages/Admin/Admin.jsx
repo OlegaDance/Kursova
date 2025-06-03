@@ -12,9 +12,11 @@ import {
   Typography,
   Box,
   CircularProgress,
-  Grid,
   Collapse,
   TextField,
+  Grid,
+  FormControlLabel,
+  Switch,
 } from "@mui/material";
 
 export default function AdminCars() {
@@ -24,17 +26,59 @@ export default function AdminCars() {
   const [expandedId, setExpandedId] = useState(null);
   const [editData, setEditData] = useState({});
   const [savingId, setSavingId] = useState(null);
-  const [isEditing, setIsEditing] = useState(false); // режим редагування в розгорнутому блоці
+  const [error, setError] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
 
-  const fetchCars = async () => {
+  const fetchCars = () => {
     setLoading(true);
-    try {
-      const res = await axios.get("http://localhost:5158/api/cars");
-      setCars(res.data);
-    } catch (error) {
-      alert("Помилка при завантаженні машин");
-    }
-    setLoading(false);
+    setError(null);
+
+    fetch("http://localhost:5158/api/cars")
+      .then((res) => {
+        if (!res.ok) throw new Error("Помилка завантаження авто");
+        return res.json();
+      })
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setCars(data);
+        } else if (data && Array.isArray(data.$values)) {
+          const mappedCars = data.$values.map((car) => ({
+            id: car.Id,
+            vinCode: car.VinCode,
+            vehicleId: car.VehicleId,
+            make: car.Make,
+            model: car.Model,
+            modelYear: car.ModelYear,
+            verifiedVin: car.VerifiedVin,
+            productType: car.ProductType,
+            body: car.Body,
+            drive: car.Drive,
+            engineDisplacement: car.EngineDisplacement,
+            fuelTypePrimary: car.FuelTypePrimary,
+            engineModel: car.EngineModel,
+            manufacturer: car.Manufacturer,
+            manufacturerAddress: car.ManufacturerAddress,
+            plantCompany: car.PlantCompany,
+            plantCountry: car.PlantCountry,
+            plantState: car.PlantState,
+            fuelConsumptionExtraUrban: car.FuelConsumptionExtraUrban,
+            fuelConsumptionUrban: car.FuelConsumptionUrban,
+            numberOfDoors: car.NumberOfDoors,
+            maxWeight: car.MaxWeight,
+            checkDigit: car.CheckDigit,
+            sequentialNumber: car.SequentialNumber,
+            price: car.Price,
+          }));
+          setCars(mappedCars);
+        } else {
+          setCars([]);
+        }
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError(err.message);
+        setLoading(false);
+      });
   };
 
   useEffect(() => {
@@ -47,8 +91,8 @@ export default function AdminCars() {
       await axios.patch(`http://localhost:5158/api/cars/${id}/verify`, {
         verifiedVin: true,
       });
-      fetchCars();
-    } catch (error) {
+      await fetchCars();
+    } catch {
       alert("Помилка верифікації");
     }
     setUpdatingId(null);
@@ -57,13 +101,12 @@ export default function AdminCars() {
   const handleRowClick = (id) => {
     if (expandedId === id) {
       setExpandedId(null);
-      setIsEditing(false);
       setEditData({});
     } else {
       setExpandedId(id);
       const car = cars.find((c) => c.id === id);
       setEditData(car ? { ...car } : {});
-      setIsEditing(false);
+      setSavingId(null);
     }
   };
 
@@ -74,27 +117,105 @@ export default function AdminCars() {
   const saveChanges = async (id) => {
     setSavingId(id);
     try {
-      await axios.patch(`http://localhost:5158/api/cars/${id}`, editData);
+      const updatePayload = { ...editData };
+      await axios.patch(`http://localhost:5158/api/cars/${id}`, updatePayload);
       await fetchCars();
       setExpandedId(null);
       setEditData({});
-      setIsEditing(false);
-    } catch (error) {
+    } catch {
       alert("Помилка збереження змін");
     }
     setSavingId(null);
   };
 
+  const deleteCar = async (id) => {
+    if (!window.confirm("Ви впевнені, що хочете видалити авто?")) return;
+    setDeletingId(id);
+    try {
+      await axios.delete(`http://localhost:5158/api/cars/${id}`);
+      await fetchCars();
+    } catch {
+      alert("Помилка видалення авто");
+    }
+    setDeletingId(null);
+  };
+
+  const fields = [
+    { label: "Марка автомобіля", field: "make", type: "text", xs: 6 },
+    { label: "Модель", field: "model", type: "text", xs: 6 },
+    { label: "Рік випуску", field: "modelYear", type: "number", xs: 6 },
+    { label: "Тип продукту", field: "productType", type: "text", xs: 6 },
+    { label: "Тип кузова", field: "body", type: "text", xs: 6 },
+    { label: "Привід", field: "drive", type: "text", xs: 6 },
+    {
+      label: "Об’єм двигуна (л)",
+      field: "engineDisplacement",
+      type: "number",
+      xs: 6,
+    },
+    { label: "Тип палива", field: "fuelTypePrimary", type: "text", xs: 6 },
+    { label: "Модель двигуна", field: "engineModel", type: "text", xs: 12 },
+    { label: "Виробник", field: "manufacturer", type: "text", xs: 6 },
+    {
+      label: "Адреса виробника",
+      field: "manufacturerAddress",
+      type: "text",
+      xs: 12,
+    },
+    { label: "Компанія заводу", field: "plantCompany", type: "text", xs: 6 },
+    { label: "Країна заводу", field: "plantCountry", type: "text", xs: 6 },
+    { label: "Штат заводу", field: "plantState", type: "text", xs: 6 },
+    {
+      label: "Витрата палива поза містом (л/100км)",
+      field: "fuelConsumptionExtraUrban",
+      type: "number",
+      xs: 6,
+    },
+    {
+      label: "Витрата палива в місті (л/100км)",
+      field: "fuelConsumptionUrban",
+      type: "number",
+      xs: 6,
+    },
+    {
+      label: "Кількість дверей",
+      field: "numberOfDoors",
+      type: "number",
+      xs: 6,
+    },
+    {
+      label: "Максимальна вага (кг)",
+      field: "maxWeight",
+      type: "number",
+      xs: 6,
+    },
+    { label: "Контрольна цифра VIN", field: "checkDigit", type: "text", xs: 6 },
+    {
+      label: "Порядковий номер VIN",
+      field: "sequentialNumber",
+      type: "text",
+      xs: 6,
+    },
+    { label: "Ціна (₴)", field: "price", type: "number", xs: 6 },
+  ];
+
   return (
-    <Box sx={{ maxWidth: 1000, mx: "auto", mt: 4, p: 2 }}>
+    <Box sx={{ maxWidth: 1200, mx: "auto", mt: 4, p: 2 }}>
       <Typography variant="h4" gutterBottom>
-        Адмінка: Верифікація та редагування авто
+        Адмінка: Верифікація, редагування та видалення авто
       </Typography>
+
+      {error && (
+        <Typography color="error" sx={{ mb: 2 }}>
+          {error}
+        </Typography>
+      )}
+
       {loading ? (
         <CircularProgress />
       ) : (
         <TableContainer component={Paper}>
-          <Table aria-label="cars table">
+          <Table aria-label="cars table" size="small">
             <TableHead>
               <TableRow>
                 <TableCell>ID</TableCell>
@@ -103,7 +224,7 @@ export default function AdminCars() {
                 <TableCell>Модель</TableCell>
                 <TableCell>Рік</TableCell>
                 <TableCell>Верифіковано</TableCell>
-                <TableCell>Дія</TableCell>
+                <TableCell>Дії</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -111,9 +232,8 @@ export default function AdminCars() {
                 <React.Fragment key={car.id}>
                   <TableRow
                     hover
-                    sx={{ cursor: "pointer" }}
                     onClick={() => handleRowClick(car.id)}
-                    selected={expandedId === car.id}
+                    sx={{ cursor: "pointer" }}
                   >
                     <TableCell>{car.id}</TableCell>
                     <TableCell>{car.vinCode}</TableCell>
@@ -131,246 +251,97 @@ export default function AdminCars() {
                             verifyCar(car.id);
                           }}
                           disabled={updatingId === car.id}
+                          sx={{ mr: 1 }}
                         >
                           {updatingId === car.id
                             ? "Верифікація..."
                             : "Верифікувати"}
                         </Button>
                       )}
-                      {car.verifiedVin && <Typography>✔️</Typography>}
+                      <Button
+                        variant="outlined"
+                        color="error"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          deleteCar(car.id);
+                        }}
+                        disabled={deletingId === car.id}
+                      >
+                        {deletingId === car.id ? "Видалення..." : "Видалити"}
+                      </Button>
                     </TableCell>
                   </TableRow>
+                  {expandedId === car.id && (
+                    <TableRow>
+                      <TableCell colSpan={7}>
+                        <Collapse in timeout="auto" unmountOnExit>
+                          <Box
+                            sx={{
+                              p: 3,
+                              backgroundColor: "#f0f0f0",
+                              borderRadius: 2,
+                              border: "1px solid #ddd",
+                              mb: 2,
+                            }}
+                          >
+                            <Grid container spacing={2}>
+                              {fields.map(({ label, field, type, xs }) => (
+                                <Grid item xs={12} sm={xs} key={field}>
+                                  <Typography
+                                    variant="subtitle2"
+                                    sx={{
+                                      mb: 0.5,
+                                      fontWeight: 500,
+                                      color: "#444",
+                                    }}
+                                  >
+                                    {label}
+                                  </Typography>
+                                  <TextField
+                                    fullWidth
+                                    type={type}
+                                    value={editData[field] ?? ""}
+                                    onChange={(e) =>
+                                      handleChange(
+                                        field,
+                                        type === "number"
+                                          ? e.target.value === ""
+                                            ? ""
+                                            : Number(e.target.value)
+                                          : e.target.value
+                                      )
+                                    }
+                                    variant="outlined"
+                                    size="small"
+                                  />
+                                </Grid>
+                              ))}
 
-                  <TableRow>
-                    <TableCell
-                      style={{ paddingBottom: 0, paddingTop: 0 }}
-                      colSpan={7}
-                    >
-                      <Collapse
-                        in={expandedId === car.id}
-                        timeout="auto"
-                        unmountOnExit
-                      >
-                        <Box
-                          margin={2}
-                          sx={{ bgcolor: "#f9f9f9", borderRadius: 1, p: 2 }}
-                        >
-                          <Grid container spacing={2}>
-                            <Grid item xs={6}>
-                              {isEditing ? (
-                                <>
-                                  <TextField
-                                    label="VIN код"
-                                    fullWidth
-                                    margin="dense"
-                                    value={editData.vinCode || ""}
-                                    onChange={(e) =>
-                                      handleChange("vinCode", e.target.value)
-                                    }
-                                  />
-                                  <TextField
-                                    label="Марка"
-                                    fullWidth
-                                    margin="dense"
-                                    value={editData.make || ""}
-                                    onChange={(e) =>
-                                      handleChange("make", e.target.value)
-                                    }
-                                  />
-                                  <TextField
-                                    label="Модель"
-                                    fullWidth
-                                    margin="dense"
-                                    value={editData.model || ""}
-                                    onChange={(e) =>
-                                      handleChange("model", e.target.value)
-                                    }
-                                  />
-                                  <TextField
-                                    label="Рік"
-                                    type="number"
-                                    fullWidth
-                                    margin="dense"
-                                    value={editData.modelYear || ""}
-                                    onChange={(e) =>
-                                      handleChange("modelYear", e.target.value)
-                                    }
-                                  />
-                                  <TextField
-                                    label="Тип продукту"
-                                    fullWidth
-                                    margin="dense"
-                                    value={editData.productType || ""}
-                                    onChange={(e) =>
-                                      handleChange(
-                                        "productType",
-                                        e.target.value
-                                      )
-                                    }
-                                  />
-                                  <TextField
-                                    label="Кузов"
-                                    fullWidth
-                                    margin="dense"
-                                    value={editData.body || ""}
-                                    onChange={(e) =>
-                                      handleChange("body", e.target.value)
-                                    }
-                                  />
-                                  <TextField
-                                    label="Привід"
-                                    fullWidth
-                                    margin="dense"
-                                    value={editData.drive || ""}
-                                    onChange={(e) =>
-                                      handleChange("drive", e.target.value)
-                                    }
-                                  />
-                                  <TextField
-                                    label="Двигун"
-                                    fullWidth
-                                    margin="dense"
-                                    value={editData.engineModel || ""}
-                                    onChange={(e) =>
-                                      handleChange(
-                                        "engineModel",
-                                        e.target.value
-                                      )
-                                    }
-                                  />
-                                </>
-                              ) : (
-                                <>
-                                  <Typography>
-                                    <strong>VIN код:</strong> {car.vinCode}
-                                  </Typography>
-                                  <Typography>
-                                    <strong>Марка:</strong> {car.make}
-                                  </Typography>
-                                  <Typography>
-                                    <strong>Модель:</strong> {car.model}
-                                  </Typography>
-                                  <Typography>
-                                    <strong>Рік:</strong> {car.modelYear}
-                                  </Typography>
-                                  <Typography>
-                                    <strong>Тип продукту:</strong>{" "}
-                                    {car.productType}
-                                  </Typography>
-                                  <Typography>
-                                    <strong>Кузов:</strong> {car.body}
-                                  </Typography>
-                                  <Typography>
-                                    <strong>Привід:</strong> {car.drive}
-                                  </Typography>
-                                  <Typography>
-                                    <strong>Двигун:</strong> {car.engineModel}
-                                  </Typography>
-                                </>
-                              )}
-                            </Grid>
-                            <Grid item xs={6}>
-                              {isEditing ? (
-                                <>
-                                  <TextField
-                                    label="Виробник"
-                                    fullWidth
-                                    margin="dense"
-                                    value={editData.manufacturer || ""}
-                                    onChange={(e) =>
-                                      handleChange(
-                                        "manufacturer",
-                                        e.target.value
-                                      )
-                                    }
-                                  />
-                                  <TextField
-                                    label="Адреса виробника"
-                                    fullWidth
-                                    margin="dense"
-                                    value={editData.manufacturerAddress || ""}
-                                    onChange={(e) =>
-                                      handleChange(
-                                        "manufacturerAddress",
-                                        e.target.value
-                                      )
-                                    }
-                                  />
-                                  <TextField
-                                    label="Кількість дверей"
-                                    type="number"
-                                    fullWidth
-                                    margin="dense"
-                                    value={editData.numberOfDoors || ""}
-                                    onChange={(e) =>
-                                      handleChange(
-                                        "numberOfDoors",
-                                        e.target.value
-                                      )
-                                    }
-                                  />
-                                  <TextField
-                                    label="Ціна"
-                                    type="number"
-                                    fullWidth
-                                    margin="dense"
-                                    value={editData.price || ""}
-                                    onChange={(e) =>
-                                      handleChange("price", e.target.value)
-                                    }
-                                  />
-                                </>
-                              ) : (
-                                <>
-                                  <Typography>
-                                    <strong>Виробник:</strong>{" "}
-                                    {car.manufacturer}
-                                  </Typography>
-                                  <Typography>
-                                    <strong>Адреса виробника:</strong>{" "}
-                                    {car.manufacturerAddress}
-                                  </Typography>
-                                  <Typography>
-                                    <strong>Кількість дверей:</strong>{" "}
-                                    {car.numberOfDoors}
-                                  </Typography>
-                                  <Typography>
-                                    <strong>Ціна:</strong> {car.price}
-                                  </Typography>
-                                </>
-                              )}
-                              <Box mt={2}>
-                                <Typography variant="subtitle1">
-                                  Фото:
-                                </Typography>
-                                {car.photoPaths && car.photoPaths.length > 0 ? (
-                                  car.photoPaths.map((p, i) => (
-                                    <img
-                                      key={i}
-                                      src={`http://localhost:5158${p}`}
-                                      alt={`car-${car.id}-${i}`}
-                                      style={{
-                                        maxWidth: "100%",
-                                        maxHeight: 200,
-                                        marginTop: 10,
-                                      }}
+                              <Grid item xs={12}>
+                                <FormControlLabel
+                                  control={
+                                    <Switch
+                                      checked={!!editData.verifiedVin}
+                                      onChange={() =>
+                                        handleChange(
+                                          "verifiedVin",
+                                          !editData.verifiedVin
+                                        )
+                                      }
+                                      color="success"
                                     />
-                                  ))
-                                ) : (
-                                  <Typography>Немає фото</Typography>
-                                )}
-                              </Box>
-                            </Grid>
-                          </Grid>
-                          <Box mt={2} textAlign="right">
-                            {isEditing ? (
-                              <>
+                                  }
+                                  label="Верифіковано"
+                                />
+                              </Grid>
+
+                              <Grid item xs={12} sx={{ mt: 2 }}>
                                 <Button
                                   variant="contained"
-                                  color="success"
+                                  color="primary"
                                   onClick={() => saveChanges(car.id)}
                                   disabled={savingId === car.id}
-                                  sx={{ mr: 1 }}
+                                  sx={{ mr: 2 }}
                                 >
                                   {savingId === car.id
                                     ? "Збереження..."
@@ -378,38 +349,22 @@ export default function AdminCars() {
                                 </Button>
                                 <Button
                                   variant="outlined"
-                                  color="secondary"
                                   onClick={() => {
-                                    setIsEditing(false);
-                                    setEditData(car); // відкат змін
+                                    setExpandedId(null);
+                                    setEditData({});
                                   }}
                                 >
                                   Відмінити
                                 </Button>
-                              </>
-                            ) : (
-                              <Button
-                                variant="contained"
-                                onClick={() => setIsEditing(true)}
-                              >
-                                Редагувати
-                              </Button>
-                            )}
+                              </Grid>
+                            </Grid>
                           </Box>
-                        </Box>
-                      </Collapse>
-                    </TableCell>
-                  </TableRow>
+                        </Collapse>
+                      </TableCell>
+                    </TableRow>
+                  )}
                 </React.Fragment>
               ))}
-
-              {cars.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={7} align="center">
-                    Машини не знайдено
-                  </TableCell>
-                </TableRow>
-              )}
             </TableBody>
           </Table>
         </TableContainer>

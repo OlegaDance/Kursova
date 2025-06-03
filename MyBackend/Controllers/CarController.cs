@@ -98,6 +98,7 @@ namespace CarApi.Controllers
                 SequentialNumber = carDto.SequentialNumber,
                 Price = carDto.Price,
                 PhotoPaths = filteredPaths,
+                UserPhoneNumber = carDto.UserPhoneNumber,
                 VerifiedVin = false
             };
 
@@ -155,7 +156,48 @@ public async Task<ActionResult<IEnumerable<Car>>> SearchCars(
     return Ok(cars);
 }
 
+// PATCH: api/cars/{id}
+// Часткове оновлення авто (наприклад, редагування деяких полів)
+[HttpPatch("{id}")]
+public async Task<IActionResult> UpdateCar(int id, [FromBody] CarUpdateDto carDto)
+{
+    if (!ModelState.IsValid)
+        return BadRequest(ModelState);
 
+    var car = await _context.Cars.FindAsync(id);
+    if (car == null)
+        return NotFound();
+
+    // Оновлюємо лише ті поля, які передані в carDto (можна розширити за потреби)
+    if (!string.IsNullOrWhiteSpace(carDto.Make))
+        car.Make = carDto.Make;
+    if (!string.IsNullOrWhiteSpace(carDto.Model))
+        car.Model = carDto.Model;
+    if (carDto.ModelYear.HasValue)
+        car.ModelYear = carDto.ModelYear.Value;
+    if (carDto.Price.HasValue)
+        car.Price = carDto.Price.Value;
+    // Додайте сюди інші поля, які потрібно редагувати
+
+    await _context.SaveChangesAsync();
+
+    return NoContent();
+}
+
+// DELETE: api/cars/{id}
+// Видалення авто за id
+[HttpDelete("{id}")]
+public async Task<IActionResult> DeleteCar(int id)
+{
+    var car = await _context.Cars.FindAsync(id);
+    if (car == null)
+        return NotFound();
+
+    _context.Cars.Remove(car);
+    await _context.SaveChangesAsync();
+
+    return NoContent();
+}
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Car>>> GetAllCars([FromQuery] int? verifiedVin)

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./Header.module.scss";
 import { Link } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -8,8 +8,10 @@ import SyncUser from "../../component/Syncuser/SyncUser.jsx";
 
 function Header() {
   const { isAuthenticated, loginWithRedirect, logout, user } = useAuth0();
+  const [phoneNumber, setPhoneNumber] = useState(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
+    // Записуємо основні дані користувача у localStorage (разово при зміні user)
     if (isAuthenticated && user) {
       const rawSub = user.sub || "";
       const idString = rawSub.split("|")[1];
@@ -27,6 +29,16 @@ function Header() {
     }
   }, [isAuthenticated, user]);
 
+  useEffect(() => {
+    // Оновлюємо phoneNumber з localStorage щосекунди
+    const interval = setInterval(() => {
+      const storedPhone = localStorage.getItem("phoneNumber");
+      setPhoneNumber(storedPhone);
+    }, 1000);
+
+    return () => clearInterval(interval); // очищуємо інтервал при анмаунті компонента
+  }, []);
+
   return (
     <main className={styles.header}>
       <nav className={styles.navigationTarget}>
@@ -35,11 +47,18 @@ function Header() {
         <Link to={"./profilePage"}>Профіль</Link>
       </nav>
 
-      {/* Рендеримо кнопку тільки якщо користувач авторизований */}
       {isAuthenticated && (
-        <Link to={"./AddCarPage"}>
-          <button>Додати авто</button>
-        </Link>
+        <>
+          {phoneNumber && phoneNumber.trim() !== "" ? (
+            <Link to={"./AddCarPage"}>
+              <button>Додати авто</button>
+            </Link>
+          ) : (
+            <p style={{ color: "red", fontWeight: "bold", marginTop: "10px" }}>
+              Пішов нахуй дай номер телефону
+            </p>
+          )}
+        </>
       )}
 
       {isAuthenticated && user ? (

@@ -145,6 +145,10 @@ const CarPage = () => {
           <strong>Штат заводу:</strong> {car.PlantState}
         </p>
         <p>
+          <strong>Телефон продавця:</strong>{" "}
+          {car.UserPhoneNumber || "Не вказано"}
+        </p>
+        <p>
           <strong>Ціна:</strong> {car.Price} $
         </p>
       </div>

@@ -67,6 +67,10 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.MaxDepth = 64; 
     });
 
+
+
+builder.Services.AddAuthorization();
+
 // --- Аутентифікація JWT Auth0 ---
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

@@ -12,6 +12,8 @@ namespace CarApi.Models
         public string Name { get; set; }
 
         public string Email { get; set; }
+
+        public string PhoneNumber { get; set; }
         public string Auth0Sub { get; set; }
 
         public string PictureUrl { get; set; }
