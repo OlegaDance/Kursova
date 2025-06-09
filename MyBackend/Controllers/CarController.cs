@@ -129,7 +129,8 @@ public async Task<ActionResult<IEnumerable<Car>>> SearchCars(
     [FromQuery] int? modelYear,
     [FromQuery] decimal? minPrice,
     [FromQuery] decimal? maxPrice,
-    [FromQuery] string? plantCompany)
+    [FromQuery] string? plantCompany,
+    [FromQuery] bool? verifiedVin)   // <-- додано
 {
     IQueryable<Car> query = _context.Cars;
 
@@ -151,13 +152,16 @@ public async Task<ActionResult<IEnumerable<Car>>> SearchCars(
     if (!string.IsNullOrWhiteSpace(plantCompany))
         query = query.Where(c => c.PlantCompany.Contains(plantCompany));
 
+    if (verifiedVin.HasValue)
+        query = query.Where(c => c.VerifiedVin == verifiedVin.Value);
+
     var cars = await query.ToListAsync();
 
     return Ok(cars);
 }
 
 // PATCH: api/cars/{id}
-// Часткове оновлення авто (наприклад, редагування деяких полів)
+
 [HttpPatch("{id}")]
 public async Task<IActionResult> UpdateCar(int id, [FromBody] CarUpdateDto carDto)
 {
@@ -168,7 +172,7 @@ public async Task<IActionResult> UpdateCar(int id, [FromBody] CarUpdateDto carDt
     if (car == null)
         return NotFound();
 
-    // Оновлюємо лише ті поля, які передані в carDto (можна розширити за потреби)
+   
     if (!string.IsNullOrWhiteSpace(carDto.Make))
         car.Make = carDto.Make;
     if (!string.IsNullOrWhiteSpace(carDto.Model))
@@ -177,15 +181,14 @@ public async Task<IActionResult> UpdateCar(int id, [FromBody] CarUpdateDto carDt
         car.ModelYear = carDto.ModelYear.Value;
     if (carDto.Price.HasValue)
         car.Price = carDto.Price.Value;
-    // Додайте сюди інші поля, які потрібно редагувати
+
 
     await _context.SaveChangesAsync();
 
     return NoContent();
 }
 
-// DELETE: api/cars/{id}
-// Видалення авто за id
+
 [HttpDelete("{id}")]
 public async Task<IActionResult> DeleteCar(int id)
 {

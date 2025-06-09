@@ -18,7 +18,6 @@ namespace CarApi.Controllers
             _context = context;
         }
 
-        // GET: api/users
         [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> GetUsers()
         {
@@ -26,7 +25,6 @@ namespace CarApi.Controllers
             return Ok(users);
         }
 
-        // GET: api/users/{id}
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetUser(int id)
         {
@@ -34,14 +32,11 @@ namespace CarApi.Controllers
             if (user == null)
                 return NotFound();
 
-            // Додано для перевірки у виводі дебагу номера телефону
             System.Diagnostics.Debug.WriteLine($"User Id: {user.Id}, PhoneNumber: {user.PhoneNumber}");
 
-            // Повертаємо повний об'єкт користувача, включно з номером телефону
             return Ok(user);
         }
 
-        // POST: api/users
         [HttpPost]
         public async Task<ActionResult<User>> CreateUser([FromBody] User user)
         {
@@ -60,7 +55,6 @@ namespace CarApi.Controllers
             return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user);
         }
 
-        // PUT: api/users/{id}
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateUser(int id, [FromBody] User user)
         {
@@ -74,13 +68,12 @@ namespace CarApi.Controllers
             existingUser.Name = user.Name;
             existingUser.Email = user.Email;
             existingUser.PictureUrl = user.PictureUrl;
-            existingUser.PhoneNumber = user.PhoneNumber; // Оновлення телефону тут теж
+            existingUser.PhoneNumber = user.PhoneNumber; 
 
             await _context.SaveChangesAsync();
             return NoContent();
         }
 
-        // DELETE: api/users/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
@@ -94,7 +87,6 @@ namespace CarApi.Controllers
             return NoContent();
         }
 
-        // PUT: api/users/phone
         [HttpPut("phone")]
         public async Task<IActionResult> UpdatePhone([FromBody] UpdatePhoneDto dto)
         {

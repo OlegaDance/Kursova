@@ -25,6 +25,9 @@ const CarPage = () => {
   }, [user]);
 
   useEffect(() => {
+    setLoading(true);
+    setError(null);
+
     // Завантаження авто
     fetch(`http://localhost:5158/api/cars/${id}`)
       .then((res) => {
@@ -59,12 +62,15 @@ const CarPage = () => {
     if (!newComment.trim()) return;
     if (!isAuthenticated || !userId) return;
 
+    
+
     setSending(true);
     setSendError(null);
 
     const commentToSend = {
       UserId: userId,
       Text: newComment.trim(),
+      CarId: parseInt(id, 10), // Ось тут обов’язково CarId!
     };
 
     fetch(`http://localhost:5158/api/comments/car/${id}`, {
@@ -87,6 +93,8 @@ const CarPage = () => {
         setSendError(err.message);
         setSending(false);
       });
+
+      console.log("Відправляю коментар:", commentToSend);
   };
 
   if (loading) return <div>Завантаження...</div>;

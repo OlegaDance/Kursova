@@ -202,7 +202,7 @@ export default function AdminCars() {
   return (
     <Box sx={{ maxWidth: 1200, mx: "auto", mt: 4, p: 2 }}>
       <Typography variant="h4" gutterBottom>
-        Адмінка: Верифікація, редагування та видалення авто
+        Адмінка
       </Typography>
 
       {error && (

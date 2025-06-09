@@ -9,7 +9,6 @@ export const Main = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Поля пошуку
   const [make, setMake] = useState("");
   const [model, setModel] = useState("");
   const [modelYear, setModelYear] = useState("");
@@ -17,7 +16,6 @@ export const Main = () => {
   const [maxPrice, setMaxPrice] = useState("");
   const [plantCompany, setPlantCompany] = useState("");
 
-  // Валідація полів перед пошуком
   const validateInputs = () => {
     if (
       modelYear &&
@@ -56,6 +54,9 @@ export const Main = () => {
     if (minPrice.trim()) params.append("minPrice", minPrice.trim());
     if (maxPrice.trim()) params.append("maxPrice", maxPrice.trim());
     if (plantCompany.trim()) params.append("plantCompany", plantCompany.trim());
+
+    // Додаємо фільтр на верифіковані авто
+    params.append("verifiedVin", "true");
 
     fetch(`http://localhost:5158/api/cars/search?${params.toString()}`)
       .then((res) => {

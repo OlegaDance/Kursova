@@ -23,7 +23,6 @@ namespace CarApi.Controllers
             _logger = logger;
         }
 
-        // GET: api/comments/car/{carId} - отримати коментарі для авто
 [HttpGet("car/{carId}")]
 public async Task<IActionResult> GetCommentsForCar(int carId)
 {
@@ -45,7 +44,6 @@ public async Task<IActionResult> GetCommentsForCar(int carId)
 }
 
 
-        // POST: api/comments/car/{carId} - додати коментар для конкретного авто
         [HttpPost("car/{carId}")]
         public async Task<IActionResult> PostCommentForCar(int carId, [FromBody] CommentDto commentDto)
         {

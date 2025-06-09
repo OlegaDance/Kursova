@@ -55,7 +55,7 @@ function Header() {
             </Link>
           ) : (
             <p style={{ color: "red", fontWeight: "bold", marginTop: "10px" }}>
-              Пішов нахуй дай номер телефону
+             Додайте номер телефону
             </p>
           )}
         </>

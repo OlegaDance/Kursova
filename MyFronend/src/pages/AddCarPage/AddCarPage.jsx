@@ -3,7 +3,6 @@ import styles from "./AddCarPage.module.scss";
 import { Link } from "react-router-dom";
 
 export default function AddCarPage() {
-  // Ініціалізація стейту з localStorage
   const [form, setForm] = useState({
     vinCode: "",
     vehicleId: "",
@@ -31,11 +30,10 @@ export default function AddCarPage() {
     sequentialNumber: "",
     price: "",
     VerifiedVin: false,
-    userPhoneNumber: localStorage.getItem("phoneNumber") || "", // беремо phoneNumber
+    userPhoneNumber: localStorage.getItem("phoneNumber") || "", 
     photoPaths: [],
   });
 
-  // Якщо localStorage зміниться в іншому вкладці/вікні - оновлюємо телефон тут
   useEffect(() => {
     const handleStorageChange = (event) => {
       if (event.key === "phoneNumber") {
@@ -177,7 +175,7 @@ export default function AddCarPage() {
   return (
     <div className={styles.formContainer}>
       <h2 className={styles.title}>Додати автомобіль</h2>
-      <Link to={"/AddVin"}>Головна</Link>
+      <Link to={"/AddVin"}>Додати автомобіль через VINCode</Link>
       <form onSubmit={handleSubmit}>
         {Object.entries(fieldLabels).map(([field, label]) => (
           <React.Fragment key={field}>
@@ -199,7 +197,7 @@ export default function AddCarPage() {
                 id={field}
                 value={form[field]}
                 onChange={handleChange}
-                required={field !== "userPhoneNumber"} // телефон — необов’язковий
+                required={field !== "userPhoneNumber"}
               />
             )}
           </React.Fragment>

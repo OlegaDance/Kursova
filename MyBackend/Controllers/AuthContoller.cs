@@ -56,16 +56,14 @@ namespace CarApi.Controllers
             }
             catch (Exception ex)
             {
-                // Тут можна додати логування ex.Message, ex.StackTrace і т.д.
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
     }
 
-    // DTO-клас для прийому даних з фронтенду
     public class SyncUserDto
     {
-        public string Id { get; set; }         // це Auth0Sub, наприклад "auth0|1234567890"
+        public string Id { get; set; }        
         public string Name { get; set; }
         public string Email { get; set; }
         public string PictureUrl { get; set; }
